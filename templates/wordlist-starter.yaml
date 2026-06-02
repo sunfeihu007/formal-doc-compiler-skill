@@ -1,0 +1,54 @@
+# Compliance wordlist — empty starter.
+# Copy this file to .compliance/wordlist.yaml in your project folder, then add
+# project-specific terms as they come up.
+#
+# Category structure is just for grouping in the report. Add or rename freely.
+# `suggested_replacement` is shown to the writer when a hit is reported.
+# `terms` accepts both literal strings and regex patterns (escape with \).
+
+categories:
+
+  third_party_brands:
+    description: "Brand names from other vendors that should not appear in our outbound docs."
+    suggested_replacement: "a leading <category> tool"
+    terms: []
+
+  competitor_products:
+    description: "Specific competitor products our doc should not name."
+    suggested_replacement: ""
+    terms: []
+
+  specific_models:
+    description: "Specific AI/ML model names that lock the doc to a vendor."
+    suggested_replacement: "mainstream large language model"
+    terms: []
+
+  specific_hardware:
+    description: "Specific hardware / chip vendor names that lock the doc to a supplier."
+    suggested_replacement: "mainstream domestic accelerator"
+    terms: []
+
+  hard_metrics:
+    description: "Specific numeric performance claims that should be deferred to the implementation plan."
+    suggested_replacement: "to be evaluated jointly during implementation"
+    terms: []
+
+  hard_dates:
+    description: "Specific months / dates that prematurely fix timeline."
+    suggested_replacement: "per the schedule jointly agreed in the implementation plan"
+    terms: []
+
+  other_companies:
+    description: "Other companies / institutions that should not appear in our outbound docs."
+    suggested_replacement: "<peer institution>"
+    terms: []
+
+  other_locations:
+    description: "Specific cities / branch names that should not appear (e.g., demo data leakage)."
+    suggested_replacement: "<region / branch>"
+    terms: []
+
+  other:
+    description: "Catch-all for project-specific terms that don't fit above."
+    suggested_replacement: ""
+    terms: []

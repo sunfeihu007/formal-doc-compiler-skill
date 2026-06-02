@@ -1,0 +1,19 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+*.bak
+*.bak.*
+
+# Local test artifacts
+/tmp-*
+/test-output/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Don't ignore dist/ — we ship the prebuilt .plugin
+!dist/
