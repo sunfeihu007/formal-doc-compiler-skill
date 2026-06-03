@@ -4,7 +4,7 @@
 set -euo pipefail
 
 BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-TARGET="$HOME/agent-skills/compile-from-sources"
+TARGET="$HOME/agent-skills/formal-doc-compiler-skill"
 
 if [[ ! -e "$TARGET" ]] || ! [[ "$TARGET" -ef "$BUNDLE_ROOT" ]]; then
     [[ -e "$TARGET" ]] && mv "$TARGET" "${TARGET}.bak.$$"

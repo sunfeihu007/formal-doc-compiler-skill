@@ -4,7 +4,7 @@
 set -euo pipefail
 
 BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-TARGET="$HOME/agent-skills/compile-from-sources"
+TARGET="$HOME/agent-skills/formal-doc-compiler-skill"
 
 echo "Bundle: $BUNDLE_ROOT"
 echo "Target: $TARGET"
@@ -34,8 +34,8 @@ if [[ -z "$RULES" ]]; then
 fi
 
 mkdir -p "$(dirname "$RULES")"
-MARKER_START="# === compile-from-sources skill bundle ==="
-MARKER_END="# === end compile-from-sources ==="
+MARKER_START="# === formal-doc-compiler-skill skill bundle ==="
+MARKER_END="# === end formal-doc-compiler-skill ==="
 
 if [[ -f "$RULES" ]] && grep -qF "$MARKER_START" "$RULES"; then
     echo "Rules already contain the bundle block; skipping."

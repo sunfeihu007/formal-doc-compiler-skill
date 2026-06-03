@@ -10,7 +10,7 @@ The plugin install directory is typically read-only after Cowork installs it. Wr
 |----------|------|-----------|----------|
 | 1 (highest) | Project | `<CWD>/.compile-deliverables/` | Each project keeps its own archive. Strongest isolation. Best when the project has client-confidential structure. |
 | 2 | Team / client | `<CWD>/../.compile-deliverables/` | Multiple projects under one customer or one workstream share an archive. The parent folder commonly represents the customer (e.g., `兴业/`) or the practice area. |
-| 3 | Global | `~/.compile-from-sources/deliverables/` | Cross-project personal library. Best when you handle a wide variety of unrelated work and want every past deliverable available as a possible reference. |
+| 3 | Global | `~/.formal-doc-compiler-skill/deliverables/` | Cross-project personal library. Best when you handle a wide variety of unrelated work and want every past deliverable available as a possible reference. |
 
 ## Resolution at write time (`/archive`)
 
@@ -18,7 +18,7 @@ The plugin install directory is typically read-only after Cowork installs it. Wr
 def resolve_archive_root(cwd):
     project = cwd / ".compile-deliverables"
     team    = cwd.parent / ".compile-deliverables"
-    global_ = Path.home() / ".compile-from-sources" / "deliverables"
+    global_ = Path.home() / ".formal-doc-compiler-skill" / "deliverables"
 
     # 1. If any of these directories already exists, the user has decided. Pick the highest-priority existing one.
     for candidate in (project, team, global_):
@@ -42,7 +42,7 @@ def collect_indices(cwd):
     for candidate in (
         cwd / ".compile-deliverables" / "INDEX.md",
         cwd.parent / ".compile-deliverables" / "INDEX.md",
-        Path.home() / ".compile-from-sources" / "deliverables" / "INDEX.md",
+        Path.home() / ".formal-doc-compiler-skill" / "deliverables" / "INDEX.md",
     ):
         if candidate.exists():
             indices.append((candidate, parse_index(candidate)))
@@ -86,7 +86,7 @@ Sort by `Doc type` then `Date` descending. The `Notable` column should be terse 
 ## When to migrate tiers
 
 - **Project → team** — when you find yourself archiving the same kind of document for the same customer across multiple sub-projects. Move the project's `.compile-deliverables/` up one level, merge INDEX.md.
-- **Team → global** — when you change role / company and want to take the corpus with you. Move to `~/.compile-from-sources/deliverables/`.
+- **Team → global** — when you change role / company and want to take the corpus with you. Move to `~/.formal-doc-compiler-skill/deliverables/`.
 - **Pruning** — periodically remove deliverables older than 18 months that haven't been referenced (track this manually for now).
 
 ## Redaction guidance

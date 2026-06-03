@@ -3,9 +3,9 @@
 
 set -euo pipefail
 
-TARGET="$HOME/agent-skills/compile-from-sources"
-MARKER_START="# === compile-from-sources skill bundle ==="
-MARKER_END="# === end compile-from-sources ==="
+TARGET="$HOME/agent-skills/formal-doc-compiler-skill"
+MARKER_START="# === formal-doc-compiler-skill skill bundle ==="
+MARKER_END="# === end formal-doc-compiler-skill ==="
 
 echo "Removing bundle integrations…"
 
@@ -39,11 +39,11 @@ done
 
 # Claude Code plugin
 if command -v claude >/dev/null 2>&1; then
-    claude plugin uninstall compile-from-sources 2>/dev/null || true
+    claude plugin uninstall formal-doc-compiler-skill 2>/dev/null || true
 fi
 
 # Symlinks
-rm -f "$HOME/.claude/plugins/compile-from-sources"
+rm -f "$HOME/.claude/plugins/formal-doc-compiler-skill"
 
 # The bundle itself
 if [[ -d "$TARGET" ]]; then

@@ -15,16 +15,16 @@ This adapter wires the bundle into mechanisms 1 and 2.
 ```bash
 mkdir -p ~/agent-skills
 # If the user already has the bundle locally (e.g., git clone), move it here:
-mv <current-bundle-location> ~/agent-skills/compile-from-sources
+mv <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
 
 # Or clone fresh from GitHub:
-# git clone https://github.com/<owner>/compile-from-sources ~/agent-skills/compile-from-sources
+# git clone https://github.com/<owner>/formal-doc-compiler-skill ~/agent-skills/formal-doc-compiler-skill
 ```
 
 Set `BUNDLE_ROOT`:
 
 ```bash
-echo 'export BUNDLE_ROOT=~/agent-skills/compile-from-sources' >> ~/.zshrc  # or ~/.bashrc
+echo 'export BUNDLE_ROOT=~/agent-skills/formal-doc-compiler-skill' >> ~/.zshrc  # or ~/.bashrc
 ```
 
 ### Step 2 — Append to `~/.codex/AGENTS.md`
@@ -35,27 +35,27 @@ Codex reads `AGENTS.md` files for system-level instructions. Append (do not over
 mkdir -p ~/.codex
 cat >> ~/.codex/AGENTS.md <<'EOF'
 
-# === compile-from-sources skill bundle ===
+# === formal-doc-compiler-skill skill bundle ===
 
 When the user asks to compile a formal document from source materials —
 tender / RFP / 招标要求 / 方案 / 报告 / 白皮书 / proposal / white paper /
 research brief / project summary — follow the 9-step workflow in:
 
-  ~/agent-skills/compile-from-sources/instructions/compile.md
+  ~/agent-skills/formal-doc-compiler-skill/instructions/compile.md
 
 Sub-procedures (read on demand):
-- File triage:           ~/agent-skills/compile-from-sources/instructions/file-triage.md
-- Compliance scan:       ~/agent-skills/compile-from-sources/instructions/compliance-check.md
-- Chinese typography:    ~/agent-skills/compile-from-sources/instructions/cn-formal-style.md
-- Archive deliverable:   ~/agent-skills/compile-from-sources/instructions/archive.md
+- File triage:           ~/agent-skills/formal-doc-compiler-skill/instructions/file-triage.md
+- Compliance scan:       ~/agent-skills/formal-doc-compiler-skill/instructions/compliance-check.md
+- Chinese typography:    ~/agent-skills/formal-doc-compiler-skill/instructions/cn-formal-style.md
+- Archive deliverable:   ~/agent-skills/formal-doc-compiler-skill/instructions/archive.md
 
-Scanner script: ~/agent-skills/compile-from-sources/scripts/scan.py
-Wordlist template: ~/agent-skills/compile-from-sources/templates/wordlist-starter.yaml
+Scanner script: ~/agent-skills/formal-doc-compiler-skill/scripts/scan.py
+Wordlist template: ~/agent-skills/formal-doc-compiler-skill/templates/wordlist-starter.yaml
 
 Within any of those files, resolve ${BUNDLE_ROOT} to
-~/agent-skills/compile-from-sources/
+~/agent-skills/formal-doc-compiler-skill/
 
-# === end compile-from-sources ===
+# === end formal-doc-compiler-skill ===
 EOF
 ```
 
@@ -67,7 +67,7 @@ This lets the user type `/compile` and `/archive` (per Codex prompt conventions)
 mkdir -p ~/.codex/prompts
 
 cat > ~/.codex/prompts/compile.md <<'EOF'
-Read ~/agent-skills/compile-from-sources/instructions/compile.md and follow
+Read ~/agent-skills/formal-doc-compiler-skill/instructions/compile.md and follow
 it step by step.
 
 If the user passed arguments after the command, treat them as:
@@ -75,18 +75,18 @@ If the user passed arguments after the command, treat them as:
 - Second arg: doc type (tender / proposal / whitepaper / brief / summary)
 
 Within the workflow, resolve ${BUNDLE_ROOT} to
-~/agent-skills/compile-from-sources/
+~/agent-skills/formal-doc-compiler-skill/
 EOF
 
 cat > ~/.codex/prompts/archive.md <<'EOF'
-Read ~/agent-skills/compile-from-sources/instructions/archive.md and follow
+Read ~/agent-skills/formal-doc-compiler-skill/instructions/archive.md and follow
 it step by step.
 
 If the user passed a file path argument, use that as the deliverable to
 archive. Otherwise look for the most recent deliverable in the conversation.
 
 Within the workflow, resolve ${BUNDLE_ROOT} to
-~/agent-skills/compile-from-sources/
+~/agent-skills/formal-doc-compiler-skill/
 EOF
 ```
 
@@ -109,9 +109,9 @@ npm init -y && npm install docx
 
 Start a new Codex session and verify:
 
-1. Run any chat. Codex's first system prompt should now contain the compile-from-sources block from `AGENTS.md`. (You can confirm by asking Codex: "Do you know how to compile a formal document from source materials?")
+1. Run any chat. Codex's first system prompt should now contain the formal-doc-compiler-skill block from `AGENTS.md`. (You can confirm by asking Codex: "Do you know how to compile a formal document from source materials?")
 2. Try the prompt: `/compile`. Codex should read `instructions/compile.md` and begin the workflow.
-3. Run: `python3 ~/agent-skills/compile-from-sources/scripts/scan.py --help`. Should print argparse help.
+3. Run: `python3 ~/agent-skills/formal-doc-compiler-skill/scripts/scan.py --help`. Should print argparse help.
 
 ## Uninstall
 
@@ -123,7 +123,7 @@ $EDITOR ~/.codex/AGENTS.md
 rm ~/.codex/prompts/compile.md ~/.codex/prompts/archive.md
 
 # Remove the bundle
-rm -rf ~/agent-skills/compile-from-sources
+rm -rf ~/agent-skills/formal-doc-compiler-skill
 ```
 
 ## Troubleshooting

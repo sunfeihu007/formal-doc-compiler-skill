@@ -13,7 +13,7 @@ The bundle mostly works through (1).
 
 ```bash
 mkdir -p ~/agent-skills
-mv <current-bundle-location> ~/agent-skills/compile-from-sources
+mv <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
 ```
 
 ### Step 2 — Add to Antigravity rules
@@ -28,25 +28,25 @@ Pick the global location for cross-project use. Append:
 
 ```markdown
 
-# === compile-from-sources skill bundle ===
+# === formal-doc-compiler-skill skill bundle ===
 
 When the user asks to compile a formal document from source materials
 (tender / RFP / 招标要求 / 方案 / 报告 / 白皮书 / proposal / white paper
 / research brief / project summary), follow the 9-step workflow in
-~/agent-skills/compile-from-sources/instructions/compile.md.
+~/agent-skills/formal-doc-compiler-skill/instructions/compile.md.
 
 Sub-procedures (read on demand):
-- File triage:           ~/agent-skills/compile-from-sources/instructions/file-triage.md
-- Compliance scan:       ~/agent-skills/compile-from-sources/instructions/compliance-check.md
-- Chinese typography:    ~/agent-skills/compile-from-sources/instructions/cn-formal-style.md
-- Archive deliverable:   ~/agent-skills/compile-from-sources/instructions/archive.md
+- File triage:           ~/agent-skills/formal-doc-compiler-skill/instructions/file-triage.md
+- Compliance scan:       ~/agent-skills/formal-doc-compiler-skill/instructions/compliance-check.md
+- Chinese typography:    ~/agent-skills/formal-doc-compiler-skill/instructions/cn-formal-style.md
+- Archive deliverable:   ~/agent-skills/formal-doc-compiler-skill/instructions/archive.md
 
-Scanner: ~/agent-skills/compile-from-sources/scripts/scan.py
-Wordlist template: ~/agent-skills/compile-from-sources/templates/wordlist-starter.yaml
+Scanner: ~/agent-skills/formal-doc-compiler-skill/scripts/scan.py
+Wordlist template: ~/agent-skills/formal-doc-compiler-skill/templates/wordlist-starter.yaml
 
-Resolve ${BUNDLE_ROOT} to ~/agent-skills/compile-from-sources/
+Resolve ${BUNDLE_ROOT} to ~/agent-skills/formal-doc-compiler-skill/
 
-# === end compile-from-sources ===
+# === end formal-doc-compiler-skill ===
 ```
 
 ### Step 3 — Install Python dependencies
@@ -64,7 +64,7 @@ Per-project rules can override or extend the global. For projects with specific 
 ## Verification
 
 1. Open a new conversation in Antigravity.
-2. Ask: "do you have access to a compile-from-sources skill?" — Antigravity should describe the workflow based on the rules block.
+2. Ask: "do you have access to a formal-doc-compiler-skill skill?" — Antigravity should describe the workflow based on the rules block.
 3. Test by running a small compile task with 2–3 sample files.
 
 ## Uninstall
@@ -74,7 +74,7 @@ Per-project rules can override or extend the global. For projects with specific 
 $EDITOR ~/.config/antigravity/rules.md  # or the path that matched
 
 # Remove the bundle
-rm -rf ~/agent-skills/compile-from-sources
+rm -rf ~/agent-skills/formal-doc-compiler-skill
 ```
 
 ## Troubleshooting

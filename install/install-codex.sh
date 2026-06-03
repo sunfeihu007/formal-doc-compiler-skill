@@ -4,7 +4,7 @@
 set -euo pipefail
 
 BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-TARGET="$HOME/agent-skills/compile-from-sources"
+TARGET="$HOME/agent-skills/formal-doc-compiler-skill"
 
 echo "Bundle: $BUNDLE_ROOT"
 echo "Target: $TARGET"
@@ -27,8 +27,8 @@ fi
 # Step 2 — append to ~/.codex/AGENTS.md
 mkdir -p "$HOME/.codex"
 AGENTS="$HOME/.codex/AGENTS.md"
-MARKER_START="# === compile-from-sources skill bundle ==="
-MARKER_END="# === end compile-from-sources ==="
+MARKER_START="# === formal-doc-compiler-skill skill bundle ==="
+MARKER_END="# === end formal-doc-compiler-skill ==="
 
 if [[ -f "$AGENTS" ]] && grep -qF "$MARKER_START" "$AGENTS"; then
     echo "AGENTS.md already contains the bundle block; skipping."

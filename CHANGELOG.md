@@ -11,7 +11,7 @@ Repackaged as a cross-client bundle. The same instructions and scripts now drive
 - `install/` — shell scripts that automate each adapter (`install.sh` is the dispatcher, with auto-detection)
 - `instructions/` — client-neutral versions of the previous SKILL.md files (no frontmatter, paths use `${BUNDLE_ROOT}`)
 - `references/`, `scripts/`, `templates/` — flattened to top level so they're easy to reference from any client
-- `dist/compile-from-sources-0.2.0.plugin` — prebuilt Cowork plugin, kept in the repo for one-click install
+- `dist/formal-doc-compiler-skill-0.2.0.plugin` — prebuilt Cowork plugin, kept in the repo for one-click install
 
 ### Changed
 

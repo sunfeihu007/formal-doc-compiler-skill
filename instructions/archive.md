@@ -16,7 +16,7 @@ After delivering any formal document via the compile workflow, if the user wants
    |------|------|-------------|
    | Project | `<CWD>/.compile-deliverables/` | Per-project — strongest isolation. **Default.** |
    | Team / client | `<CWD>/../.compile-deliverables/` | Multiple projects share one customer. |
-   | Global | `~/.compile-from-sources/deliverables/` | Personal cross-project library. |
+   | Global | `~/.formal-doc-compiler-skill/deliverables/` | Personal cross-project library. |
 
    On the very first archive of a project, ask which tier to use; after that the choice is implicit from where the existing `.compile-deliverables/` directory lives.
 

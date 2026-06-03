@@ -3,7 +3,7 @@
 set -euo pipefail
 
 BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-PLUGIN_FILE="$BUNDLE_ROOT/dist/compile-from-sources-0.2.0.plugin"
+PLUGIN_FILE="$BUNDLE_ROOT/dist/formal-doc-compiler-skill-0.2.0.plugin"
 
 echo "Bundle: $BUNDLE_ROOT"
 

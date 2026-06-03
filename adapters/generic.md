@@ -15,12 +15,12 @@ If the client can Read local files (most modern agent clients can):
 1. Place the bundle:
    ```bash
    mkdir -p ~/agent-skills
-   mv <current-bundle-location> ~/agent-skills/compile-from-sources
+   mv <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
    ```
 2. Find the client's "custom instructions" / "system prompt" / "persistent context" config. Append:
    ```
    When the user asks to compile a formal document from source materials, follow
-   the workflow in ~/agent-skills/compile-from-sources/instructions/compile.md.
+   the workflow in ~/agent-skills/formal-doc-compiler-skill/instructions/compile.md.
    ```
 3. Done. The client will Read the file on demand.
 

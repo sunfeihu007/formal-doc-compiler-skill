@@ -1,4 +1,4 @@
-# compile-from-sources
+# formal-doc-compiler-skill
 
 Turn a folder of mixed source materials into a polished formal document.
 
@@ -16,7 +16,7 @@ In your agent client of choice, paste this:
 
 ```
 Please install this skill bundle:
-https://github.com/sunfeihu007/compile-from-sources
+https://github.com/sunfeihu007/formal-doc-compiler-skill
 
 Follow the instructions in AGENT-INSTALL.md.
 ```
@@ -82,12 +82,12 @@ For Cowork, the script just tells you where the `.plugin` file is; you double-cl
 
 ## Conventions
 
-- **Bundle install location** — `~/agent-skills/compile-from-sources/` for non-Cowork clients. Cowork uses its own managed plugin directory.
+- **Bundle install location** — `~/agent-skills/formal-doc-compiler-skill/` for non-Cowork clients. Cowork uses its own managed plugin directory.
 - **Compliance wordlists** — live with the project at `<project>/.compliance/wordlist.yaml`. Start empty (`templates/wordlist-starter.yaml`), grow over time.
 - **Few-shot example archive** — three tiers, highest priority that exists:
   1. `<project>/.compile-deliverables/` — per-project
   2. `<project>/../.compile-deliverables/` — team / customer scope
-  3. `~/.compile-from-sources/deliverables/` — personal global library
+  3. `~/.formal-doc-compiler-skill/deliverables/` — personal global library
 
   See `references/archive-locations.md` for the resolution algorithm.
 
@@ -137,7 +137,7 @@ MIT. See `LICENSE`.
 The bundle and the prebuilt Cowork plugin version independently:
 
 - Bundle version: see `VERSION` (currently `0.3.0`)
-- Cowork plugin version: see `dist/compile-from-sources-<x.y.z>.plugin` filename (currently `0.2.0`)
+- Cowork plugin version: see `dist/formal-doc-compiler-skill-<x.y.z>.plugin` filename (currently `0.2.0`)
 
 Changelog in `CHANGELOG.md`.
 

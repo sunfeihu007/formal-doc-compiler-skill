@@ -7,7 +7,7 @@ Claude Code uses the same plugin format as Cowork. You have two install routes.
 If a prebuilt `.plugin` file is available:
 
 ```bash
-claude plugin install <bundle-root>/dist/compile-from-sources-0.2.0.plugin
+claude plugin install <bundle-root>/dist/formal-doc-compiler-skill-0.2.0.plugin
 ```
 
 The Claude Code CLI handles unpacking and registration. Confirm with:
@@ -16,7 +16,7 @@ The Claude Code CLI handles unpacking and registration. Confirm with:
 claude plugin list
 ```
 
-`compile-from-sources` should appear with version `0.2.0`.
+`formal-doc-compiler-skill` should appear with version `0.2.0`.
 
 ## Path B — symlink for live development
 
@@ -27,7 +27,7 @@ If the user wants to edit the bundle and have changes take effect immediately:
 # Then symlink it into Claude Code's plugin directory
 BUNDLE_ROOT=<bundle-root>
 mkdir -p ~/.claude/plugins
-ln -s "$BUNDLE_ROOT" ~/.claude/plugins/compile-from-sources
+ln -s "$BUNDLE_ROOT" ~/.claude/plugins/formal-doc-compiler-skill
 ```
 
 Note: this assumes the bundle root itself follows Claude Code's plugin layout. The bundle has both — a top-level `instructions/` for client-neutral use, AND it can be built into the Cowork plugin layout via `adapters/claude-cowork.md` Path C. For Claude Code, the simplest is to use Path A's installer; symlinking the raw bundle won't register skills unless you also build a `.claude-plugin/plugin.json` and `skills/*/SKILL.md` layout.
@@ -40,7 +40,7 @@ If only the raw bundle is available, build the plugin layout first using the ste
 
 ```bash
 claude plugin list
-# Expected: compile-from-sources@0.2.0
+# Expected: formal-doc-compiler-skill@0.2.0
 ```
 
 In an interactive session:
@@ -53,13 +53,13 @@ Should show the command's argument hints.
 ## Uninstall
 
 ```bash
-claude plugin uninstall compile-from-sources
+claude plugin uninstall formal-doc-compiler-skill
 ```
 
 or remove the symlink:
 
 ```bash
-rm ~/.claude/plugins/compile-from-sources
+rm ~/.claude/plugins/formal-doc-compiler-skill
 ```
 
 ## Troubleshooting

@@ -105,8 +105,8 @@ Components (each is a markdown file you Read on demand):
 Throughout the instructions and references, `${BUNDLE_ROOT}` refers to wherever this bundle ended up on disk. The adapters set this:
 
 - Cowork → wherever Cowork installs plugins
-- Claude Code → `~/.claude/plugins/compile-from-sources/` (or symlink)
-- Codex / Antigravity / generic → `~/agent-skills/compile-from-sources/` (recommended default)
+- Claude Code → `~/.claude/plugins/formal-doc-compiler-skill/` (or symlink)
+- Codex / Antigravity / generic → `~/agent-skills/formal-doc-compiler-skill/` (recommended default)
 
 When you Read a file inside the bundle, resolve `${BUNDLE_ROOT}` to the actual install location. Do not pass `${BUNDLE_ROOT}` literally to the file-system.
 

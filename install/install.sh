@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — top-level installer for compile-from-sources bundle
+# install.sh — top-level installer for formal-doc-compiler-skill bundle
 #
 # Usage:
 #   bash install/install.sh                  # auto-detect client

@@ -53,7 +53,7 @@ Before writing the outline, scan the deliverable archive for relevant few-shot e
 1. Check, in priority order, each of these `INDEX.md` files (skip ones that don't exist):
    - `<CWD>/.compile-deliverables/INDEX.md` (project tier)
    - `<CWD>/../.compile-deliverables/INDEX.md` (team / client tier)
-   - `~/.compile-from-sources/deliverables/INDEX.md` (global tier)
+   - `~/.formal-doc-compiler-skill/deliverables/INDEX.md` (global tier)
 2. Pick 1–2 rows whose `Doc type` (and ideally `Domain` / `Language`) match the current task.
 3. Read the matched entries' `.meta.yaml` files for the `chapters` list, `notable` notes, and `lessons`.
 4. Optionally Read the matched document itself for spot-check.
