@@ -58,6 +58,8 @@ For each clause in `requirements.md`, find the draft section that responds to it
 
 A mandatory clause with no response **blocks delivery** — same severity as a compliance hit. Advisory clauses ("宜") go in the table too, marked as user's call.
 
+Also flag **weakened answers**: the clause says 须/应 but the draft responds with 尽量 / 配合 / 支持 without committing. Weakened wording does not reduce the obligation — it just reads as evasive to evaluators. List these next to uncovered clauses, severity one notch lower.
+
 ### 3 — Over-promise check (draft → tender)
 
 Scan the draft for commitment-shaped statements and verify each maps back to a clause. Pattern signals worth flagging for semantic review (not a mechanical list — judge each in context):
@@ -67,6 +69,8 @@ Scan the draft for commitment-shaped statements and verify each maps back to a c
 - Absolutes: 免费 / 无限 / 不限量 / 终身 / 永久 / 全部承担
 - Scope creep: 整合 / 迁移 / 改造 existing systems the tender didn't mention
 - Warranty: 质保 X 年 beyond the tender's requirement
+- **Either-of upgrades**: the clause says "A 或 B" and the draft promises A **and** B. Possibly a deliberate scoring differentiator — surface it so the user chooses consciously, don't auto-cut.
+- **Unconditioned resource-dependent claims**: capabilities that depend on client-provided resources (高可用 / 多副本 / 容灾 on the client's servers) promised without a conditioning phrase like "在招标人提供资源满足的前提下".
 
 ```markdown
 ### 无对应要求的承诺
@@ -84,6 +88,8 @@ Each finding is resolved one of two ways only: revise the draft, or the user exp
 If the document contains a 逐条响应表 (clause-by-clause response table), then **after every revision round** verify that every section/paragraph the table references still exists and still says what the table claims. Deleting a paragraph that a response-table row points at is the classic silent failure — the table keeps asserting a response that is no longer in the document.
 
 This check re-runs on *every* edit, not just the first draft. It is cheap (minutes) and the failure it catches is disqualifying.
+
+Practical recipe for any revision round: extract both versions to plain text (`pandoc -t plain --wrap=none old.docx / new.docx`) and `diff` them first — the diff localizes every check in this skill to what actually changed, and surfaces silent deletions the user didn't mention.
 
 ### 5 — Report
 
