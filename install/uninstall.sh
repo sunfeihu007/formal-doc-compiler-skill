@@ -32,6 +32,10 @@ rm -f "$HOME/.codex/prompts/compile.md" "$HOME/.codex/prompts/archive.md"
 strip_block "$HOME/Library/Application Support/Antigravity/rules.md"
 strip_block "$HOME/.config/antigravity/rules.md"
 
+# Trae — project rules of the current directory (user rules live in Trae's
+# settings UI; remove the block there manually)
+strip_block "$PWD/.trae/rules/project_rules.md"
+
 # Claude Code — plugin route
 if command -v claude >/dev/null 2>&1; then
     claude plugin uninstall formal-doc-compiler-skill 2>/dev/null || true

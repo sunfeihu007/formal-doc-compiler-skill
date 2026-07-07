@@ -27,7 +27,9 @@ Single source of truth, working installs on every client, and scanner fixes.
 ### Added
 
 - `.claude-plugin/marketplace.json` — install from GitHub in two commands
+- `adapters/trae.md` + `install/install-trae.sh` — Trae (ByteDance AI IDE), via `.trae/rules/project_rules.md` and user rules
 - `adapters/plugin-file.md` + `install/install-plugin-file.sh` — third-party clients that import Claude-format `.plugin` files
+- README rewritten in Chinese with a per-client install guide
 - `build.sh` — source → `dist/*.plugin`, with version sync and frontmatter sanity check
 - `install/common.sh` — shared rules-block emitter (Codex/Antigravity/generic now can't drift apart) and dependency installer
 - `tests/test_scan.py` — scanner regression tests

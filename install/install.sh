@@ -25,6 +25,10 @@ detect_clients() {
     if [[ -d "$HOME/.config/antigravity" ]] || [[ -d "$HOME/Library/Application Support/Antigravity" ]]; then
         echo "antigravity"
     fi
+    if [[ -d "./.trae" ]] || [[ -d "$HOME/Library/Application Support/Trae" ]] \
+        || [[ -d "$HOME/Library/Application Support/Trae CN" ]]; then
+        echo "trae"
+    fi
 }
 
 usage() {
@@ -36,6 +40,7 @@ Clients:
     claude-code     Claude Code CLI (plugin marketplace, with skills-dir fallback)
     claude-cowork   Claude desktop app (Cowork mode) — .plugin file
     codex           OpenAI Codex CLI — AGENTS.md + prompts
+    trae            Trae IDE (ByteDance) — .trae/rules + user rules
     antigravity     Google Antigravity IDE — rules file
     plugin-file     Any client that installs Claude-format .plugin files
     generic         Anything else — bundle + manual wiring

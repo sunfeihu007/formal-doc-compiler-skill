@@ -1,150 +1,195 @@
-# formal-doc-compiler-skill
+# formal-doc-compiler-skill · 方案撰写技能
 
-Turn a folder of mixed source materials into a polished formal document.
+把一个装满杂乱源材料的文件夹，编译成一份可交付的正式文档。
 
-Built for the work pattern where you have 10–30 files of varying type and importance — meeting notes, technical write-ups, client requirements, planning drafts, audio transcripts — and you need to produce **one** authoritative long-form document grounded in those materials. Tender / RFP technical requirements, proposals, white papers, research briefs, project summaries, board memos.
+适用的工作场景：你手头有 10–30 个类型、重要性各不相同的文件——会议纪要、技术说明、客户需求、规划草稿、录音转写——需要产出**一份**以这些材料为依据的权威长文档。典型交付物：招标/RFP 技术需求书、方案书、白皮书、研究简报、项目总结、董事会备忘录。
 
-Runs across multiple agent clients: Claude Code (CLI), Claude Cowork (desktop), OpenAI Codex CLI, Google Antigravity IDE, any third-party client that imports Claude-format `.plugin` files, and any generic LLM agent with file access.
+跨客户端可用：Claude Code（CLI）、Claude Cowork（桌面版）、OpenAI Codex CLI、Trae（字节 AI IDE）、Google Antigravity、任何支持导入 Claude 格式 `.plugin` 文件的第三方客户端，以及任何有文件访问能力的通用 LLM Agent。
 
 ---
 
-## Quick install
+## 核心能力
 
-**Claude Code** — the repo is itself a plugin + marketplace:
+- **9 步编译工作流**：锁定范围 → 文件分级 → 解析 → 综合 → 大纲（含用户确认检查点）→ 撰写 → 三层校验（合规/格式/视觉）→ 交付
+- **L1–L4 文件分级**：不把上下文浪费在低信号文件上
+- **合规扫描器**：按项目词表扫描违禁词（第三方品牌、竞品、具体模型名、硬性指标、日期等），大小写/全半角不敏感，支持正则
+- **中文公文排版**：黑体标题、宋体正文、首行缩进两字符、（一）（二）（三）条款编号，docx-js 参数与辅助函数直接可用
+- **Few-shot 归档库**：交付过的好文档存档为结构参考，越用越懂你的行文习惯
+- **内容与代码分离**：正文放 JSON 数据文件，生成脚本只负责渲染——全角引号转义 bug 从根上消失
+
+---
+
+## 各客户端安装方法
+
+### Claude Code（CLI）
+
+本仓库本身就是一个 Claude 插件 + marketplace，两条命令从 GitHub 直接安装：
 
 ```bash
 claude plugin marketplace add sunfeihu007/formal-doc-compiler-skill
 claude plugin install formal-doc-compiler-skill@formal-doc-compiler
 ```
 
-**Everything else** — clone and run the dispatcher:
+验证：`claude plugin list` 应出现 `formal-doc-compiler-skill`；新会话里输入 `/compile`。
+
+CLI 版本太旧或受限环境？克隆后运行 `bash install/install-claude-code.sh`，脚本会自动降级到 `~/.claude/skills/` 目录安装。详见 [adapters/claude-code.md](adapters/claude-code.md)。
+
+### Claude Cowork（桌面版）
 
 ```bash
 git clone https://github.com/sunfeihu007/formal-doc-compiler-skill
 cd formal-doc-compiler-skill
-bash install/install.sh          # auto-detects; asks if several clients found
+bash install/install-claude-cowork.sh
 ```
 
-**Plugin-only third-party clients** — import the packaged plugin file:
+脚本会给出 `dist/formal-doc-compiler-skill-<版本>.plugin` 的位置；在 Cowork 里打开该文件，点击卡片上的 **Save plugin** 即可。详见 [adapters/claude-cowork.md](adapters/claude-cowork.md)。
+
+### OpenAI Codex CLI
 
 ```bash
-bash build.sh                    # → dist/formal-doc-compiler-skill-<version>.plugin
-# then import that file with your client's plugin mechanism
+git clone https://github.com/sunfeihu007/formal-doc-compiler-skill
+cd formal-doc-compiler-skill
+bash install/install-codex.sh
 ```
 
----
+脚本会把工作流接入 `~/.codex/AGENTS.md`，并安装 `/compile`、`/archive` 两个 prompt。详见 [adapters/codex.md](adapters/codex.md)。
 
-## Hand this repo to an agent and say "install it"
+### Trae（字节 AI IDE）
 
-Any modern LLM agent with file-system access can install this without you knowing which platform you're on. In your agent client of choice, paste:
+```bash
+git clone https://github.com/sunfeihu007/formal-doc-compiler-skill
+cd 你的工作项目目录
+bash <克隆路径>/install/install-trae.sh
+```
+
+脚本会把 bundle 放到 `~/agent-skills/`，并把规则块写入当前项目的 `.trae/rules/project_rules.md`；同时打印一份同样的规则块，粘到 Trae → 设置 → 规则 → 用户规则（user_rules.md）里即可对所有项目生效。详见 [adapters/trae.md](adapters/trae.md)。
+
+### 只支持导入插件的第三方客户端
+
+任何能导入 Claude 格式 `.plugin` 文件（zip：`.claude-plugin/plugin.json` + `skills/` + `commands/`）的客户端：
+
+```bash
+bash build.sh        # 生成 dist/formal-doc-compiler-skill-<版本>.plugin
+```
+
+然后用客户端自己的插件导入方式（导入/打开/拖拽）加载该文件。详见 [adapters/plugin-file.md](adapters/plugin-file.md)。
+
+### Google Antigravity
+
+```bash
+bash install/install-antigravity.sh    # 追加到 Antigravity 的 rules 文件
+```
+
+详见 [adapters/antigravity.md](adapters/antigravity.md)。
+
+### 其他任意客户端
+
+```bash
+bash install/install.sh        # 自动探测客户端；探测到多个会让你选
+# 或者
+bash install/install-generic.sh   # 放置 bundle 并打印接线用的规则块
+```
+
+把打印出的规则块粘进客户端的"自定义指令 / 系统提示词"配置即可。没有本地文件能力的客户端见 [adapters/generic.md](adapters/generic.md) 的降级方案（直接粘贴 SKILL.md 或走 GitHub raw URL）。
+
+### 最省事的方式：让 Agent 自己装
+
+把下面这段话直接发给你的 AI 客户端：
 
 ```
-Please install this skill bundle:
+请安装这个技能包：
 https://github.com/sunfeihu007/formal-doc-compiler-skill
 
-Follow the instructions in AGENT-INSTALL.md.
+按 AGENT-INSTALL.md 里的说明操作。
 ```
 
-The agent will detect which client it's running in, read the matching `adapters/<client>.md`, run or replicate `install/install-<client>.sh`, verify, and tell you what to try next.
+Agent 会自己判断运行在哪个客户端里、读对应的 `adapters/<client>.md`、执行安装并验证。
 
 ---
 
-## What's in this bundle
+## 用法
 
-The repo root **is** the Claude plugin — `skills/` and `commands/` are the single source of truth for all clients. There is no separate "instructions" copy to drift out of sync.
+```
+/compile ./tender-materials/ tender
+```
 
-| Component | Purpose |
+或者直接说："基于这个文件夹里的材料，写一份招标技术需求书"。
+
+一次典型运行：
+
+```
+1. 锚定    —— 确认输出语言、目标读者（上下文已明确则跳过）
+2. 锁范围  —— 一轮提问：哪些章节、详略如何
+3. 分级    —— 14 个输入文件排出 L1/L2/L3/L4 阅读计划
+4. 解析    —— python-docx / pdftotext 并行解析 L1/L2 文件
+5. 综合    —— 读取归档的 few-shot 范例，拟出 11 章大纲
+   ↳ 大纲每章一行给你过目："第七章并进第六章" —— 秒改
+6. 载入格式 —— docx 格式参考 + 中文公文排版参数
+7. 撰写    —— 章节内容写成 JSON 数据文件 + 一个渲染脚本，运行生成
+8. 校验    —— 合规：59 个词条 0 命中；格式：schema 通过；视觉：目录页+表格页渲染抽查
+9. 交付    —— 成品移入工作目录，汇报：36 页，2.1 万字
+```
+
+交付后可 `/archive` 把这份文档存进 few-shot 库，供下次同类任务参考。
+
+### 合规词表
+
+词表放在项目里：`<项目>/.compliance/wordlist.yaml`（从 `templates/wordlist-starter.yaml` 复制起步）。词条默认按字面匹配（大小写、全半角不敏感）；正则用 `regex:` 前缀显式声明。注意不要在 CJK 字符旁用 `\b`（会静默漏报）。
+
+```yaml
+categories:
+  third_party_brands:
+    suggested_replacement: "某主流行情工具"
+    terms:
+      - Wind            # 字面匹配，wind / WIND / Ｗｉｎｄ 都能抓到
+  hard_metrics:
+    suggested_replacement: "以实施方案共同评估为准"
+    terms:
+      - "regex:\\d+\\s*并发"
+```
+
+---
+
+## 仓库结构
+
+仓库根目录**就是** Claude 插件——`skills/` 与 `commands/` 是所有客户端共用的唯一内容源，不存在会漂移的第二份拷贝。
+
+| 组件 | 用途 |
 |---|---|
-| `skills/formal-doc-compiler-skill/` | The 9-step workflow — scope clarification, file triage, parsing, synthesis, outline (+ user confirmation), drafting, compliance check, visual sampling, delivery |
-| `skills/file-triage/` | L1 / L2 / L3 / L4 reading tiers for source folders |
-| `skills/compliance-check/` | Wordlist-based forbidden-term scanner |
-| `skills/cn-formal-style/` | Chinese formal-document typography (黑体 / 宋体 / 2-char indent / 一-二-三 numbering) |
-| `commands/compile.md`, `commands/archive.md` | `/compile` and `/archive` entry points |
-| `skills/*/references/` | Extended notes each skill links to, read on demand |
-| `scripts/scan.py` | The compliance scanner (Python; tested — `python3 -m pytest tests/`) |
-| `templates/wordlist-starter.yaml` | Empty wordlist with category scaffolding |
-| `.claude-plugin/` | Plugin + marketplace manifests (Claude Code installs straight from GitHub) |
-| `adapters/` | One file per agent client describing exactly how to wire the bundle in |
-| `install/` | Shell scripts that automate what the adapters describe |
-| `build.sh` | Builds `dist/formal-doc-compiler-skill-<version>.plugin` from source |
-| `dist/` | The built `.plugin` file for Cowork / plugin-only clients |
+| `skills/formal-doc-compiler-skill/` | 9 步主工作流 |
+| `skills/file-triage/` | L1–L4 文件分级规则 |
+| `skills/compliance-check/` | 违禁词扫描流程 |
+| `skills/cn-formal-style/` | 中文公文排版参数与 docx-js 辅助函数 |
+| `commands/compile.md` · `commands/archive.md` | `/compile`、`/archive` 入口 |
+| `skills/*/references/` | 各技能按需加载的深度参考 |
+| `scripts/scan.py` | 合规扫描器（含测试：`python3 -m pytest tests/`） |
+| `templates/wordlist-starter.yaml` | 空白词表脚手架 |
+| `.claude-plugin/` | 插件 + marketplace 清单（Claude Code 直接从 GitHub 装） |
+| `adapters/` | 每个客户端一份的接入说明 |
+| `install/` | 自动化安装脚本（`install.sh` 为总入口） |
+| `build.sh` | 从源码构建 `dist/*.plugin`（同步版本号、校验 frontmatter） |
 
 ---
 
-## Supported clients
+## 环境要求
 
-| Client | Adapter | Install | Notes |
-|---|---|---|---|
-| **Claude Code** (CLI) | `adapters/claude-code.md` | `install/install-claude-code.sh` | Plugin marketplace; falls back to `~/.claude/skills/` |
-| **Claude Cowork** (desktop) | `adapters/claude-cowork.md` | `install/install-claude-cowork.sh` | `.plugin` file, built by `build.sh` |
-| **OpenAI Codex CLI** | `adapters/codex.md` | `install/install-codex.sh` | Wires into `~/.codex/AGENTS.md` + `~/.codex/prompts/` |
-| **Google Antigravity** | `adapters/antigravity.md` | `install/install-antigravity.sh` | Appends to Antigravity rules file |
-| **Plugin-only clients** | `adapters/plugin-file.md` | `install/install-plugin-file.sh` | Any client that imports Claude-format `.plugin` files |
-| **Anything else** | `adapters/generic.md` | `install/install-generic.sh` | Drops the bundle into `~/agent-skills/`, prints the wiring block |
+- **Python 3.10+**：`pyyaml python-docx python-pptx openpyxl`，以及 `pdftotext`（Poppler）
+- **Node.js 18+**：`npm install docx`（按项目、生成 .docx 时装）
+- **LibreOffice**：PDF 转换 / 视觉校验用
+
+安装脚本会自动装 Python 依赖：先试 `pip --user`，系统 Python 受管则建 venv（`~/.formal-doc-compiler-skill/venv`），**不会**使用 `--break-system-packages`。
 
 ---
 
-## Conventions
+## 开发
 
-- **Bundle install location** — `~/agent-skills/formal-doc-compiler-skill/` for non-plugin clients. Claude Code / Cowork use their managed plugin directories; `${BUNDLE_ROOT}` in the skill files means whichever of these applies.
-- **Compliance wordlists** — live with the project at `<project>/.compliance/wordlist.yaml`. Start empty (`templates/wordlist-starter.yaml`), grow over time. Terms are literal (case- and width-insensitive) unless prefixed with `regex:`.
-- **Few-shot example archive** — three tiers; project and team archives take precedence, and the first archive in a new project always asks:
-  1. `<project>/.compile-deliverables/` — per-project
-  2. `<project>/../.compile-deliverables/` — team / customer scope
-  3. `~/.formal-doc-compiler-skill/deliverables/` — personal global library
+- 改内容：直接编辑 `skills/*/SKILL.md` / `commands/*.md`——只有这一份
+- 重新打包插件：`bash build.sh`
+- 扫描器测试：`python3 -m pytest tests/`
+- 新客户端适配：在 `adapters/` 加一份说明 + `install/` 加脚本 + 在 `install.sh` 的 `detect_clients()` 注册 + 更新本 README
 
-  See `skills/formal-doc-compiler-skill/references/archive-locations.md` for the resolution algorithm.
+版本号只有一个：`VERSION`（当前 `0.4.0`），`build.sh` 自动同步进插件清单。变更记录见 [CHANGELOG.md](CHANGELOG.md)。
 
----
+## 许可
 
-## Workflow snapshot
-
-What a compile run looks like end-to-end:
-
-```
-User: /compile ./tender-materials/ tender
-
-Agent:
-1. Anchor — Confirms output language, target reader (skipped — clear from context)
-2. Lock scope — Asks 2 questions: which sections, what depth
-3. Triage — Builds an L1/L2/L3/L4 table from 14 input files
-4. Parse — Runs python-docx / pdftotext on L1/L2 files in parallel
-5. Synthesize — Reads the project's archived few-shot examples; outlines 11 chapters
-   ↳ Shows the outline, one line per chapter. User: "chapter 7 merge into 6". Done in seconds.
-6. Load format — Reads the docx format reference + cn-formal-style
-7. Draft — Writes chapter content as JSON data files + one render script; runs it
-8. Verify — Compliance: 59 terms checked, 0 hits. Format: schema OK. Visual: TOC + table page rasterized, looks right.
-9. Deliver — Moves docx to working folder. Surfaces it. Reports: 36 pages, 21k words.
-
-Agent then offers: archive this as a few-shot? extend chapter X?
-```
-
----
-
-## Requirements
-
-- **Python 3.10+** with: `pyyaml python-docx python-pptx openpyxl` and `pdftotext` (Poppler)
-- **Node.js 18+** with `npm install docx` (per project, for .docx generation)
-- **LibreOffice** for PDF conversion / visual verification (any recent version)
-
-The install scripts install Python deps for you — `pip --user` first, venv at `~/.formal-doc-compiler-skill/venv` if your Python is externally managed. They never use `--break-system-packages`.
-
----
-
-## Developing
-
-- Content changes: edit `skills/*/SKILL.md` / `commands/*.md` — they're the only copy.
-- Rebuild the plugin file: `bash build.sh` (syncs versions from `VERSION`, checks frontmatter, zips to `dist/`).
-- Scanner tests: `python3 -m pytest tests/`.
-
-## License
-
-MIT. See `LICENSE`.
-
-## Versioning
-
-One version for everything: `VERSION` (currently `0.4.0`). `build.sh` stamps it into the plugin manifests. Changelog in `CHANGELOG.md`.
-
-## Contributing back
-
-If you build an adapter for a new client, drop the file under `adapters/`, add an install script under `install/`, register the client name in `install/install.sh`'s `detect_clients()` and `usage()`, and update this README's "Supported clients" table.
+MIT，见 `LICENSE`。

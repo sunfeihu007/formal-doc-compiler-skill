@@ -15,6 +15,7 @@ You are likely running in one of these clients. Pick the matching adapter:
 | **Claude Code** (CLI) | `claude` command in PATH, `~/.claude/` exists, no Cowork tools | `adapters/claude-code.md` |
 | **Claude Cowork** (desktop app) | Cowork-specific tools (`mcp__cowork__*`), `~/Library/Application Support/Claude/` exists | `adapters/claude-cowork.md` |
 | **OpenAI Codex CLI** | `codex` command in PATH, `~/.codex/` exists | `adapters/codex.md` |
+| **Trae** (ByteDance IDE) | `.trae/` in project, or `~/Library/Application Support/Trae*/` exists | `adapters/trae.md` |
 | **Google Antigravity** (IDE) | Antigravity IDE chrome / config dir under `~/Library/Application Support/Antigravity/` or `.antigravity/` in project | `adapters/antigravity.md` |
 | **A client whose only extension mechanism is importing plugin files** | The client's docs/UI mention importing Claude-format plugins | `adapters/plugin-file.md` |
 | **Anything else** | Default | `adapters/generic.md` |
