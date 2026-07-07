@@ -3,60 +3,27 @@
 
 set -euo pipefail
 
-BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+# shellcheck source=common.sh
+source "$SCRIPT_DIR/common.sh"
+
 TARGET="$HOME/agent-skills/formal-doc-compiler-skill"
 
 echo "Bundle: $BUNDLE_ROOT"
 echo "Target: $TARGET"
 
 # Step 1 — place bundle in stable location
-if [[ -e "$TARGET" ]]; then
-    if [[ "$TARGET" -ef "$BUNDLE_ROOT" ]]; then
-        echo "Bundle already at $TARGET"
-    else
-        echo "Target exists and is different; backing up to ${TARGET}.bak.$$"
-        mv "$TARGET" "${TARGET}.bak.$$"
-        mkdir -p "$(dirname "$TARGET")"
-        cp -R "$BUNDLE_ROOT" "$TARGET"
-    fi
-else
-    mkdir -p "$(dirname "$TARGET")"
-    cp -R "$BUNDLE_ROOT" "$TARGET"
-fi
+place_bundle "$BUNDLE_ROOT" "$TARGET"
 
 # Step 2 — append to ~/.codex/AGENTS.md
 mkdir -p "$HOME/.codex"
 AGENTS="$HOME/.codex/AGENTS.md"
-MARKER_START="# === formal-doc-compiler-skill skill bundle ==="
-MARKER_END="# === end formal-doc-compiler-skill ==="
 
 if [[ -f "$AGENTS" ]] && grep -qF "$MARKER_START" "$AGENTS"; then
     echo "AGENTS.md already contains the bundle block; skipping."
 else
-    cat >> "$AGENTS" <<EOF
-
-
-$MARKER_START
-
-When the user asks to compile a formal document from source materials —
-tender / RFP / 招标要求 / 方案 / 报告 / 白皮书 / proposal / white paper /
-research brief / project summary — follow the 9-step workflow in:
-
-  $TARGET/instructions/compile.md
-
-Sub-procedures (read on demand):
-- File triage:        $TARGET/instructions/file-triage.md
-- Compliance scan:    $TARGET/instructions/compliance-check.md
-- Chinese typography: $TARGET/instructions/cn-formal-style.md
-- Archive:            $TARGET/instructions/archive.md
-
-Scanner: $TARGET/scripts/scan.py
-Wordlist template: $TARGET/templates/wordlist-starter.yaml
-
-Resolve \${BUNDLE_ROOT} to $TARGET/
-
-$MARKER_END
-EOF
+    emit_rules_block "$TARGET" >> "$AGENTS"
     echo "Appended bundle block to $AGENTS"
 fi
 
@@ -64,7 +31,7 @@ fi
 mkdir -p "$HOME/.codex/prompts"
 
 cat > "$HOME/.codex/prompts/compile.md" <<EOF
-Read $TARGET/instructions/compile.md and follow it step by step.
+Read $TARGET/skills/formal-doc-compiler-skill/SKILL.md and follow it step by step.
 
 If the user passed arguments, treat them as:
 - First arg: source folder path
@@ -74,7 +41,8 @@ Resolve \${BUNDLE_ROOT} to $TARGET/
 EOF
 
 cat > "$HOME/.codex/prompts/archive.md" <<EOF
-Read $TARGET/instructions/archive.md and follow it step by step.
+Read $TARGET/commands/archive.md and follow it step by step
+(ignore the YAML frontmatter at the top — it's for other clients).
 
 If the user passed a file path argument, use that as the deliverable to
 archive. Otherwise look for the most recent deliverable in the conversation.
@@ -85,12 +53,7 @@ EOF
 echo "Installed prompts: /compile, /archive"
 
 # Step 4 — Python deps
-if command -v pip3 >/dev/null 2>&1; then
-    echo "Installing Python dependencies (pyyaml, python-docx, python-pptx, openpyxl)…"
-    pip3 install --quiet pyyaml python-docx python-pptx openpyxl --break-system-packages 2>/dev/null \
-        || pip3 install --quiet pyyaml python-docx python-pptx openpyxl \
-        || echo "Could not install Python deps; please install manually."
-fi
+install_python_deps
 
 echo
 echo "Codex install complete."

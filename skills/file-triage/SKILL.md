@@ -1,4 +1,9 @@
-# file-triage — sort source materials into reading tiers
+---
+name: file-triage
+description: "Sort a folder of mixed source materials into a four-tier (L1 / L2 / L3 / L4) reading plan before drafting any document. Use whenever the input is more than a handful of files and reading them all would waste context. Tier definitions: L1 = primary basis the deliverable must cite, L2 = key requirements / scope, L3 = supplementary planning / drafts, L4 = peripheral notes / nice-to-have. Output is a small Markdown table the parent workflow uses to decide what to read fully, selectively, scan, or skip. Pairs with formal-doc-compiler-skill but works standalone."
+---
+
+# Triage a folder of source materials
 
 ## Why this exists
 
@@ -53,6 +58,6 @@ If the eventual draft has gaps the user flags, the most common cause is "an L3 f
 
 Conversely, if the draft is bloated with irrelevant detail, the cause is "an L4 file was read as L2." Be willing to demote and re-synthesize.
 
-## Related references
+## Detailed references
 
-- `${BUNDLE_ROOT}/references/triage-heuristics.md` — extended worked examples and edge cases
+- `references/triage-heuristics.md` — extended worked examples and edge cases

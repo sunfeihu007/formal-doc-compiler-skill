@@ -6,7 +6,13 @@ Codex doesn't have a plugin system per se. It has three extension mechanisms you
 2. **`~/.codex/prompts/*.md`** — custom prompts you can invoke by name
 3. **MCP servers** — heavier-weight tool registration (not needed for this bundle)
 
-This adapter wires the bundle into mechanisms 1 and 2.
+This adapter wires the bundle into mechanisms 1 and 2. The install script does all of it:
+
+```bash
+bash install/install-codex.sh
+```
+
+Manual steps below, for repair or for walking a user through it.
 
 ## Install
 
@@ -14,88 +20,37 @@ This adapter wires the bundle into mechanisms 1 and 2.
 
 ```bash
 mkdir -p ~/agent-skills
-# If the user already has the bundle locally (e.g., git clone), move it here:
-mv <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
+# If the user already has the bundle locally (e.g., git clone), copy it here:
+cp -R <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
 
 # Or clone fresh from GitHub:
-# git clone https://github.com/<owner>/formal-doc-compiler-skill ~/agent-skills/formal-doc-compiler-skill
+# git clone https://github.com/sunfeihu007/formal-doc-compiler-skill ~/agent-skills/formal-doc-compiler-skill
 ```
 
-Set `BUNDLE_ROOT`:
+### Step 2 — Append the bundle block to `~/.codex/AGENTS.md`
+
+Append (do not overwrite) the block that `install/common.sh`'s `emit_rules_block` generates. To produce it without installing:
 
 ```bash
-echo 'export BUNDLE_ROOT=~/agent-skills/formal-doc-compiler-skill' >> ~/.zshrc  # or ~/.bashrc
+source install/common.sh
+emit_rules_block ~/agent-skills/formal-doc-compiler-skill
 ```
 
-### Step 2 — Append to `~/.codex/AGENTS.md`
-
-Codex reads `AGENTS.md` files for system-level instructions. Append (do not overwrite):
-
-```bash
-mkdir -p ~/.codex
-cat >> ~/.codex/AGENTS.md <<'EOF'
-
-# === formal-doc-compiler-skill skill bundle ===
-
-When the user asks to compile a formal document from source materials —
-tender / RFP / 招标要求 / 方案 / 报告 / 白皮书 / proposal / white paper /
-research brief / project summary — follow the 9-step workflow in:
-
-  ~/agent-skills/formal-doc-compiler-skill/instructions/compile.md
-
-Sub-procedures (read on demand):
-- File triage:           ~/agent-skills/formal-doc-compiler-skill/instructions/file-triage.md
-- Compliance scan:       ~/agent-skills/formal-doc-compiler-skill/instructions/compliance-check.md
-- Chinese typography:    ~/agent-skills/formal-doc-compiler-skill/instructions/cn-formal-style.md
-- Archive deliverable:   ~/agent-skills/formal-doc-compiler-skill/instructions/archive.md
-
-Scanner script: ~/agent-skills/formal-doc-compiler-skill/scripts/scan.py
-Wordlist template: ~/agent-skills/formal-doc-compiler-skill/templates/wordlist-starter.yaml
-
-Within any of those files, resolve ${BUNDLE_ROOT} to
-~/agent-skills/formal-doc-compiler-skill/
-
-# === end formal-doc-compiler-skill ===
-EOF
-```
+It tells the agent: when the user asks to compile a formal document from source materials, follow `skills/formal-doc-compiler-skill/SKILL.md`, with the sub-procedure paths (file-triage / compliance-check / cn-formal-style / archive) listed for on-demand reading. The YAML frontmatter at the top of each SKILL.md is metadata for other clients — Codex should just skip it.
 
 ### Step 3 — Add slash commands via `~/.codex/prompts/`
 
-This lets the user type `/compile` and `/archive` (per Codex prompt conventions):
-
-```bash
-mkdir -p ~/.codex/prompts
-
-cat > ~/.codex/prompts/compile.md <<'EOF'
-Read ~/agent-skills/formal-doc-compiler-skill/instructions/compile.md and follow
-it step by step.
-
-If the user passed arguments after the command, treat them as:
-- First arg: source folder path
-- Second arg: doc type (tender / proposal / whitepaper / brief / summary)
-
-Within the workflow, resolve ${BUNDLE_ROOT} to
-~/agent-skills/formal-doc-compiler-skill/
-EOF
-
-cat > ~/.codex/prompts/archive.md <<'EOF'
-Read ~/agent-skills/formal-doc-compiler-skill/instructions/archive.md and follow
-it step by step.
-
-If the user passed a file path argument, use that as the deliverable to
-archive. Otherwise look for the most recent deliverable in the conversation.
-
-Within the workflow, resolve ${BUNDLE_ROOT} to
-~/agent-skills/formal-doc-compiler-skill/
-EOF
-```
+This lets the user type `/compile` and `/archive` (per Codex prompt conventions). The install script writes both prompt files; they point at `skills/formal-doc-compiler-skill/SKILL.md` and `commands/archive.md` respectively and pin `${BUNDLE_ROOT}` to the install path.
 
 ### Step 4 — Install Python dependencies
 
-The compliance scanner needs:
+The compliance scanner needs `pyyaml` (+ format libraries). Preferred order — never start with `--break-system-packages`:
 
 ```bash
-pip3 install pyyaml python-docx python-pptx openpyxl --break-system-packages
+pip3 install --user pyyaml python-docx python-pptx openpyxl
+# externally-managed Python? use a venv instead:
+python3 -m venv ~/.formal-doc-compiler-skill/venv
+~/.formal-doc-compiler-skill/venv/bin/pip install pyyaml python-docx python-pptx openpyxl
 ```
 
 For drafting .docx documents, you'll also want Node.js with the docx library — install on demand, not at bundle install time:
@@ -109,22 +64,17 @@ npm init -y && npm install docx
 
 Start a new Codex session and verify:
 
-1. Run any chat. Codex's first system prompt should now contain the formal-doc-compiler-skill block from `AGENTS.md`. (You can confirm by asking Codex: "Do you know how to compile a formal document from source materials?")
-2. Try the prompt: `/compile`. Codex should read `instructions/compile.md` and begin the workflow.
+1. Ask Codex: "Do you know how to compile a formal document from source materials?" — it should describe the 9-step workflow from `AGENTS.md`.
+2. Try the prompt: `/compile`. Codex should read the SKILL.md and begin the workflow.
 3. Run: `python3 ~/agent-skills/formal-doc-compiler-skill/scripts/scan.py --help`. Should print argparse help.
 
 ## Uninstall
 
 ```bash
-# Remove the AGENTS.md block (open the file and delete between the === markers)
-$EDITOR ~/.codex/AGENTS.md
-
-# Remove the prompts
-rm ~/.codex/prompts/compile.md ~/.codex/prompts/archive.md
-
-# Remove the bundle
-rm -rf ~/agent-skills/formal-doc-compiler-skill
+bash install/uninstall.sh
 ```
+
+(Removes the AGENTS.md block between the `===` markers, the prompt files, and the bundle.)
 
 ## Troubleshooting
 

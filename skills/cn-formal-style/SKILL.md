@@ -1,6 +1,11 @@
-# cn-formal-style — Chinese formal-document typography
+---
+name: cn-formal-style
+description: "Apply Chinese formal-document typography to a generated .docx. Use whenever the deliverable is a Chinese-language official document — government reports, tender/RFP technical requirements, board memos, project plans, research briefs, white papers, regulatory submissions — and the output must look professionally typeset (黑体 headings, 宋体 body, 2-character first-line indent, 1.5 line spacing, A4 page, 1-inch margins, header/footer, 一/二/三 clause numbering). Provides ready-to-paste docx-js helper functions and parameter constants. Pairs with the format skill for docx (anthropic-skills:docx) — read both."
+---
 
-## When to use this
+# Chinese formal-document typography
+
+## When this fires
 
 The deliverable is a Chinese formal long-form document (government report, tender / RFP, board memo, project plan, research brief, white paper, regulatory submission) and you want it to read as professional, idiomatic output rather than "an AI wrote this in default Word style."
 
@@ -10,12 +15,12 @@ This is a typography reference, not a content reference. It does not influence w
 
 The conventions here match what is actually used in Chinese government, banking, and large-enterprise documents:
 
-- **黑体** (sans-serif, bold-feeling) for headings
+- **黑体** (sans-serif, bold-feeling) for headings — by tradition, headings are 黑体
 - **宋体** (serif) for body — readable at 12pt, standard for official text
-- **2-character first-line indent** — equivalent to 480 DXA in docx-js
-- **1.5 line spacing** (`line: 360`)
+- **2-character first-line indent** — every body paragraph indents 2 Chinese characters, equivalent to 480 DXA. Unindented paragraphs read as "list items" or "callouts," not body.
+- **1.5 line spacing** (`line: 360`) — gives the document breathing room without being airy
 - **A4 portrait, 1-inch margins** — the de facto standard for printed Chinese documents
-- **(一)(二)(三) clause numbering** — NOT 1. 2. 3.
+- **(一)(二)(三) clause numbering** — the conventional way to enumerate requirements / clauses in a formal document. NOT 1. 2. 3., which reads as informal.
 
 ## Parameter constants
 
@@ -31,15 +36,15 @@ const FONT_FANG = "仿宋";       // optional, for cover / quotes
 const SIZE_H1     = 36;   // 18pt — chapter title
 const SIZE_H2     = 30;   // 15pt — section
 const SIZE_H3     = 26;   // 13pt — subsection
-const SIZE_H4     = 24;   // 12pt
+const SIZE_H4     = 24;   // 12pt — sub-subsection
 const SIZE_BODY   = 24;   // 12pt — body text
 const SIZE_TABLE  = 22;   // 11pt — table cells
 const SIZE_FOOTER = 18;   //  9pt — header / footer
 
 // Page (A4, 1-inch margins)
-const PAGE_WIDTH  = 11906;
+const PAGE_WIDTH  = 11906;  // A4 width in DXA
 const PAGE_HEIGHT = 16838;
-const MARGIN      = 1440;
+const MARGIN      = 1440;   // 1 inch
 
 // Paragraph
 const FIRST_LINE_INDENT = 480;  // 2 Chinese characters
@@ -171,11 +176,11 @@ function table(headers, rows, widths) {
 
 ## Pre-flight checks before running the script
 
-- **Quote handling.** Chinese full-width quotes "" must survive the source-file write through to the generator. If they get collapsed to ASCII `"`, the JS string literal breaks. After writing the script, run a Python sanity pass — see `${BUNDLE_ROOT}/references/quote-fix-script.md`.
+- **Content lives in JSON, not in the script.** Per Step 7 of the compile workflow, put all document text in a JSON data file the script reads at runtime. JSON round-trips full-width Chinese quotes "" without any escaping issues — the whole class of quote-collapse bugs disappears. Only if you inherited a legacy script with embedded content do you need the repair recipe in `references/quote-fix-script.md`.
 - **Smart numbers.** Never hard-code arabic 1. 2. 3. for requirement clauses. Use the `req("一", ...)` helper.
 - **Empty paragraphs.** Don't insert empty `Paragraph({ children: [new TextRun("")] })` for spacing. Adjust `spacing` on the next paragraph instead.
 
-## Related references
+## Detailed references
 
-- `${BUNDLE_ROOT}/references/full-script-example.md` — complete generation script template
-- `${BUNDLE_ROOT}/references/quote-fix-script.md` — Python recipe to recover ASCII / full-width quote mishandling
+- `references/full-script-example.md` — complete generation script template
+- `references/quote-fix-script.md` — repair recipe for legacy scripts with content embedded in JS string literals

@@ -3,18 +3,17 @@
 
 set -euo pipefail
 
-BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+# shellcheck source=common.sh
+source "$SCRIPT_DIR/common.sh"
+
 TARGET="$HOME/agent-skills/formal-doc-compiler-skill"
 
 echo "Bundle: $BUNDLE_ROOT"
 echo "Target: $TARGET"
 
-# Place the bundle
-if [[ ! -e "$TARGET" ]] || ! [[ "$TARGET" -ef "$BUNDLE_ROOT" ]]; then
-    [[ -e "$TARGET" ]] && mv "$TARGET" "${TARGET}.bak.$$"
-    mkdir -p "$(dirname "$TARGET")"
-    cp -R "$BUNDLE_ROOT" "$TARGET"
-fi
+place_bundle "$BUNDLE_ROOT" "$TARGET"
 
 # Find the rules file
 RULES=""
@@ -33,45 +32,14 @@ if [[ -z "$RULES" ]]; then
     exit 1
 fi
 
-mkdir -p "$(dirname "$RULES")"
-MARKER_START="# === formal-doc-compiler-skill skill bundle ==="
-MARKER_END="# === end formal-doc-compiler-skill ==="
-
 if [[ -f "$RULES" ]] && grep -qF "$MARKER_START" "$RULES"; then
     echo "Rules already contain the bundle block; skipping."
 else
-    cat >> "$RULES" <<EOF
-
-
-$MARKER_START
-
-When the user asks to compile a formal document from source materials
-(tender / RFP / 招标要求 / 方案 / 报告 / 白皮书 / proposal / white paper
-/ research brief / project summary), follow the 9-step workflow in
-$TARGET/instructions/compile.md.
-
-Sub-procedures (read on demand):
-- File triage:           $TARGET/instructions/file-triage.md
-- Compliance scan:       $TARGET/instructions/compliance-check.md
-- Chinese typography:    $TARGET/instructions/cn-formal-style.md
-- Archive deliverable:   $TARGET/instructions/archive.md
-
-Scanner: $TARGET/scripts/scan.py
-Wordlist template: $TARGET/templates/wordlist-starter.yaml
-
-Resolve \${BUNDLE_ROOT} to $TARGET/
-
-$MARKER_END
-EOF
+    emit_rules_block "$TARGET" >> "$RULES"
     echo "Appended bundle block to $RULES"
 fi
 
-# Python deps
-if command -v pip3 >/dev/null 2>&1; then
-    pip3 install --quiet pyyaml python-docx python-pptx openpyxl --break-system-packages 2>/dev/null \
-        || pip3 install --quiet pyyaml python-docx python-pptx openpyxl \
-        || echo "Could not install Python deps; please install manually."
-fi
+install_python_deps
 
 echo
 echo "Antigravity install complete."

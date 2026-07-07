@@ -81,40 +81,36 @@ For .csv, use `python -c "import pandas as pd; print(pd.read_csv('PATH.csv').hea
 
 ## .md / .txt / .html
 
-Use the Read tool. No conversion needed.
+Read directly with your file-reading tool. No conversion needed.
 
 ## Outsourcing to a subagent
 
-When a single parse exceeds 40k characters of output, do not return it to the main context. Instead:
+When a single parse exceeds 40k characters of output, do not return it to the main context. If your client can spawn subagents (Claude Code / Cowork: the Agent / Task tool; other clients: their delegate mechanism), give the subagent this brief:
 
 ```
-Agent(
-  description="Slice and distill <filename>",
-  subagent_type="general-purpose",
-  prompt="
-    Slice <full-path> in 40,000-char spans via Python (open(path).read()[A:B]).
-    Read every span. The file is a parsed <docx/pdf>.
+Slice <full-path> in 40,000-char spans via Python (open(path).read()[A:B]).
+Read every span. The file is a parsed <docx/pdf>.
 
-    Return a structured distillate:
-    - High-signal facts: numbers, dates, named constraints, quoted client demands.
-    - Mandatory verbatim quotes the final document must reuse.
-    - Forbidden / sensitive items the document must avoid.
-    - A 5–10 line chapter-by-chapter outline of the source.
+Return a structured distillate:
+- High-signal facts: numbers, dates, named constraints, quoted client demands.
+- Mandatory verbatim quotes the final document must reuse.
+- Forbidden / sensitive items the document must avoid.
+- A 5–10 line chapter-by-chapter outline of the source.
 
-    Keep the response under 1500 words.
-  "
-)
+Keep the response under 1500 words.
 ```
 
 The point is to keep the main context clean — only the structured distillate comes back.
 
+If your client has no subagent mechanism, slice the file yourself and skim spans, keeping only the distillate in your notes.
+
 ## Reading PDFs visually
 
-If a PDF contains diagrams or layout you need to *see* (not extract as text), rasterize and Read the image:
+If a PDF contains diagrams or layout you need to *see* (not extract as text), rasterize and view the image:
 
 ```bash
 pdftoppm -jpeg -r 100 -f PAGE -l PAGE 'PATH.pdf' /tmp/preview
-# Read /tmp/preview-PAGE.jpg with the Read tool
+# then view /tmp/preview-PAGE.jpg with your image-reading tool
 ```
 
 Use `-r 100` for skimming, `-r 150` for typographical detail.

@@ -1,21 +1,56 @@
 #!/usr/bin/env bash
-# install-claude-code.sh — install via claude CLI, with symlink fallback
+# install-claude-code.sh — install into Claude Code.
+#
+# Route A: register this repo as a local plugin marketplace, install from it.
+#          (claude plugin install only accepts marketplace plugins — it does
+#          NOT accept a .plugin file path.)
+# Route B: no claude CLI / route A failed — copy skills into ~/.claude/skills/
+#          and commands into ~/.claude/commands/, with the full bundle at
+#          ~/agent-skills/formal-doc-compiler-skill for ${BUNDLE_ROOT} paths.
+
 set -euo pipefail
 
-BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-PLUGIN_FILE="$BUNDLE_ROOT/dist/formal-doc-compiler-skill-0.2.0.plugin"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUNDLE_ROOT="${BUNDLE_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+# shellcheck source=common.sh
+source "$SCRIPT_DIR/common.sh"
 
-echo "Bundle: $BUNDLE_ROOT"
+MARKETPLACE_NAME="formal-doc-compiler"
+PLUGIN_NAME="formal-doc-compiler-skill"
 
-if [[ -f "$PLUGIN_FILE" ]] && command -v claude >/dev/null 2>&1; then
-    echo "Installing via claude CLI…"
-    if claude plugin install "$PLUGIN_FILE"; then
-        echo "Installed. List with: claude plugin list"
+if command -v claude >/dev/null 2>&1; then
+    echo "Route A: installing via Claude Code plugin marketplace…"
+    claude plugin marketplace add "$BUNDLE_ROOT" 2>/dev/null \
+        || echo "(marketplace may already be registered — continuing)"
+    if claude plugin install "${PLUGIN_NAME}@${MARKETPLACE_NAME}"; then
+        echo
+        echo "Installed. Verify with: claude plugin list"
+        echo "Then try /compile in a new session."
+        install_python_deps
         exit 0
     fi
-    echo "claude plugin install failed; falling back to symlink."
+    echo "Route A failed; falling back to skills-directory install."
 fi
 
-# Fallback: symlink the dist .plugin extracted form into ~/.claude/plugins/
-echo "Symlink fallback not yet implemented for raw bundle — please follow adapters/claude-code.md Path C."
-exit 1
+echo "Route B: copying skills into ~/.claude/skills/ …"
+TARGET="$HOME/agent-skills/$PLUGIN_NAME"
+place_bundle "$BUNDLE_ROOT" "$TARGET"
+
+mkdir -p "$HOME/.claude/skills" "$HOME/.claude/commands"
+for skill_dir in "$TARGET"/skills/*/; do
+    name="$(basename "$skill_dir")"
+    rm -rf "$HOME/.claude/skills/$name"
+    cp -R "$skill_dir" "$HOME/.claude/skills/$name"
+    echo "  skill: $name"
+done
+for cmd in "$TARGET"/commands/*.md; do
+    cp "$cmd" "$HOME/.claude/commands/$(basename "$cmd")"
+    echo "  command: /$(basename "$cmd" .md)"
+done
+
+install_python_deps
+
+echo
+echo "Installed via skills directory."
+echo "Within skill files, \${BUNDLE_ROOT} = $TARGET"
+echo "Try /compile in a new Claude Code session."

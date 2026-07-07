@@ -20,17 +20,22 @@ def resolve_archive_root(cwd):
     team    = cwd.parent / ".compile-deliverables"
     global_ = Path.home() / ".formal-doc-compiler-skill" / "deliverables"
 
-    # 1. If any of these directories already exists, the user has decided. Pick the highest-priority existing one.
-    for candidate in (project, team, global_):
+    # 1. A project- or team-level archive already exists → the user has
+    #    decided for this project. Pick the higher-priority existing one.
+    for candidate in (project, team):
         if candidate.exists() and candidate.is_dir():
             return candidate
 
-    # 2. None exists — this is the first /archive of the project. Ask via AskUserQuestion.
-    #    Default to project tier (priority 1).
-    return ask_user_with_default(project)
+    # 2. Neither exists — this is the first archive *for this project*.
+    #    Ask once (one structured question), offering all three tiers,
+    #    defaulting to the project tier. The global directory existing
+    #    (from some other project) does NOT skip this question — otherwise
+    #    every new project would silently archive into the global library
+    #    and the user would never be asked again.
+    return ask_user_with_default(project, options=[project, team, global_])
 ```
 
-The first `/archive` per project asks once; subsequent archives reuse the existing directory automatically.
+The first archive per project asks once; subsequent archives in that project reuse the existing project/team directory automatically. If the user says "always use my global library", remember that preference and stop asking.
 
 ## Resolution at read time (`/compile` Step 5)
 

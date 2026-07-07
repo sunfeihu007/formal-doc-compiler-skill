@@ -12,15 +12,14 @@ You are likely running in one of these clients. Pick the matching adapter:
 
 | Client | Telltale signs | Adapter |
 |---|---|---|
-| **Claude Cowork** (desktop app) | Cowork-specific tools (`mcp__cowork__*`), `~/Library/Application Support/Claude/` exists, AskUserQuestion / TaskCreate available | `adapters/claude-cowork.md` |
 | **Claude Code** (CLI) | `claude` command in PATH, `~/.claude/` exists, no Cowork tools | `adapters/claude-code.md` |
+| **Claude Cowork** (desktop app) | Cowork-specific tools (`mcp__cowork__*`), `~/Library/Application Support/Claude/` exists | `adapters/claude-cowork.md` |
 | **OpenAI Codex CLI** | `codex` command in PATH, `~/.codex/` exists | `adapters/codex.md` |
 | **Google Antigravity** (IDE) | Antigravity IDE chrome / config dir under `~/Library/Application Support/Antigravity/` or `.antigravity/` in project | `adapters/antigravity.md` |
+| **A client whose only extension mechanism is importing plugin files** | The client's docs/UI mention importing Claude-format plugins | `adapters/plugin-file.md` |
 | **Anything else** | Default | `adapters/generic.md` |
 
-If you cannot tell, ask the user one short question with the options above.
-
-**Trust signals.** If your runtime gave you tools whose names start with `mcp__cowork__`, that's a strong tell for Cowork. If you can see a `~/.codex/config.toml`, that's Codex. Use what you have before asking.
+**If more than one row matches** (e.g. the machine has both `claude` and `codex` installed), do not guess — ask the user one short question listing the matches. Tool names you were actually given beat directory existence: `mcp__cowork__*` tools mean Cowork even if `~/.codex` exists.
 
 ---
 
@@ -33,7 +32,7 @@ Each `adapters/<client>.md` is self-contained. It tells you:
 - How to verify the install worked
 - How to uninstall later
 
-**Do not invent steps.** If the adapter says "copy `instructions/compile.md` to `<some path>`," do exactly that. The paths and merge rules are specific to each client's extension system, and getting them wrong creates a half-installed setup that's hard to debug.
+**Do not invent steps.** If the adapter says "copy X to `<some path>`," do exactly that. The paths and merge rules are specific to each client's extension system, and getting them wrong creates a half-installed setup that's hard to debug.
 
 ---
 
@@ -84,36 +83,38 @@ Optionally, mention next steps:
 
 A nine-step workflow that turns a folder of mixed source materials (.docx, .pdf, .pptx, .xlsx, .md) into a polished formal document — tender / RFP technical requirements, proposals, white papers, research briefs, project summaries, board memos.
 
-Components (each is a markdown file you Read on demand):
+The repo root is a Claude-format plugin, and `skills/` + `commands/` are the single source of truth for every client:
 
 | Component | File | Purpose |
 |---|---|---|
-| **compile** | `instructions/compile.md` | The 9-step main workflow |
-| **archive** | `instructions/archive.md` | Save a deliverable as a few-shot example |
-| **file-triage** | `instructions/file-triage.md` | L1 / L2 / L3 / L4 reading-tier rules |
-| **compliance-check** | `instructions/compliance-check.md` | Wordlist scanner, calls `scripts/scan.py` |
-| **cn-formal-style** | `instructions/cn-formal-style.md` | Chinese formal-document typography for .docx |
+| **compile** | `skills/formal-doc-compiler-skill/SKILL.md` | The 9-step main workflow |
+| **file-triage** | `skills/file-triage/SKILL.md` | L1 / L2 / L3 / L4 reading-tier rules |
+| **compliance-check** | `skills/compliance-check/SKILL.md` | Wordlist scanner, calls `scripts/scan.py` |
+| **cn-formal-style** | `skills/cn-formal-style/SKILL.md` | Chinese formal-document typography for .docx |
+| **archive** | `commands/archive.md` | Save a deliverable as a few-shot example |
 
-`references/` holds the extended notes each instruction file links to.
-`scripts/` holds executables (currently only `scan.py`).
+Each SKILL.md starts with YAML frontmatter (name + trigger description). Clients with a skill system use it for automatic triggering; for other clients it's inert metadata — skip it and read the body.
+
+`skills/*/references/` holds the extended notes each skill links to.
+`scripts/` holds executables (currently only `scan.py`; tests in `tests/`).
 `templates/` holds starter files for project-level config.
 
 ---
 
 ## A note on `${BUNDLE_ROOT}`
 
-Throughout the instructions and references, `${BUNDLE_ROOT}` refers to wherever this bundle ended up on disk. The adapters set this:
+Throughout the skills and references, `${BUNDLE_ROOT}` refers to wherever this bundle ended up on disk. The adapters set this:
 
-- Cowork → wherever Cowork installs plugins
-- Claude Code → `~/.claude/plugins/formal-doc-compiler-skill/` (or symlink)
+- Claude Code / Cowork → the managed plugin directory (`${CLAUDE_PLUGIN_ROOT}`)
 - Codex / Antigravity / generic → `~/agent-skills/formal-doc-compiler-skill/` (recommended default)
+- Plugin-only clients → wherever the client unpacked the `.plugin` file
 
-When you Read a file inside the bundle, resolve `${BUNDLE_ROOT}` to the actual install location. Do not pass `${BUNDLE_ROOT}` literally to the file-system.
+When you read a file inside the bundle, resolve `${BUNDLE_ROOT}` to the actual install location. Do not pass `${BUNDLE_ROOT}` literally to the file-system.
 
 ---
 
 ## If you can't install
 
-Some agent clients are pure black-box (no file-system, no shell). For those, see `adapters/generic.md` — it covers the fallback of "drop instructions/compile.md into the conversation context and invoke from there."
+Some agent clients are pure black-box (no file-system, no shell). For those, see `adapters/generic.md` — it covers the fallback of "paste the SKILL.md into the conversation context and invoke from there."
 
 If the user is on such a client, set expectations: the workflow will work but you lose persistence of the wordlist, the few-shot library, and the scanner. They'll need to keep the bundle URL handy and re-bootstrap each session.

@@ -11,23 +11,20 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUNDLE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-detect_client() {
-    if [[ -d "$HOME/Library/Application Support/Claude" ]]; then
-        if [[ -d "$HOME/Library/Application Support/Claude/local-agent-mode-sessions" ]]; then
-            echo "claude-cowork"
-            return
-        fi
-    fi
-    if command -v codex >/dev/null 2>&1 || [[ -d "$HOME/.codex" ]]; then
-        echo "codex"; return
+detect_clients() {
+    # Print ALL plausible clients, one per line — the caller decides.
+    if [[ -d "$HOME/Library/Application Support/Claude/local-agent-mode-sessions" ]]; then
+        echo "claude-cowork"
     fi
     if command -v claude >/dev/null 2>&1 || [[ -d "$HOME/.claude" ]]; then
-        echo "claude-code"; return
+        echo "claude-code"
+    fi
+    if command -v codex >/dev/null 2>&1 || [[ -d "$HOME/.codex" ]]; then
+        echo "codex"
     fi
     if [[ -d "$HOME/.config/antigravity" ]] || [[ -d "$HOME/Library/Application Support/Antigravity" ]]; then
-        echo "antigravity"; return
+        echo "antigravity"
     fi
-    echo "unknown"
 }
 
 usage() {
@@ -36,13 +33,15 @@ Usage:
     bash install/install.sh [<client>]
 
 Clients:
-    claude-cowork   Claude desktop app (Cowork mode)
-    claude-code     Claude Code CLI
-    codex           OpenAI Codex CLI
-    antigravity     Google Antigravity IDE
-    generic         Generic fallback
+    claude-code     Claude Code CLI (plugin marketplace, with skills-dir fallback)
+    claude-cowork   Claude desktop app (Cowork mode) — .plugin file
+    codex           OpenAI Codex CLI — AGENTS.md + prompts
+    antigravity     Google Antigravity IDE — rules file
+    plugin-file     Any client that installs Claude-format .plugin files
+    generic         Anything else — bundle + manual wiring
 
 If no client is given, the script tries to detect one from your environment.
+If several are detected, you'll be asked to pick.
 
 Bundle location: $BUNDLE_ROOT
 EOF
@@ -56,17 +55,28 @@ main() {
     fi
 
     if [[ -z "$client" ]]; then
-        client=$(detect_client)
-        echo "Detected client: $client"
-        if [[ "$client" == "unknown" ]]; then
-            echo
-            echo "Could not auto-detect a client. Re-run with one of:"
-            echo "    bash install/install.sh claude-cowork"
-            echo "    bash install/install.sh claude-code"
-            echo "    bash install/install.sh codex"
-            echo "    bash install/install.sh antigravity"
-            echo "    bash install/install.sh generic"
+        local detected=()
+        while IFS= read -r line; do [[ -n "$line" ]] && detected+=("$line"); done < <(detect_clients)
+
+        if [[ ${#detected[@]} -eq 0 ]]; then
+            echo "Could not auto-detect a client."
+            usage
             exit 1
+        elif [[ ${#detected[@]} -eq 1 ]]; then
+            client="${detected[0]}"
+            echo "Detected client: $client"
+        else
+            echo "Multiple clients detected:"
+            local i=1
+            for c in "${detected[@]}"; do echo "  $i) $c"; i=$((i+1)); done
+            if [[ -t 0 ]]; then
+                read -rp "Which one do you want to install for? [1-${#detected[@]}] " pick
+                client="${detected[$((pick-1))]}"
+            else
+                echo "Non-interactive shell — re-run with an explicit client, e.g.:"
+                for c in "${detected[@]}"; do echo "    bash install/install.sh $c"; done
+                exit 1
+            fi
         fi
     fi
 

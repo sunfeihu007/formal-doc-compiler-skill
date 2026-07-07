@@ -1,6 +1,8 @@
-# Quote-fix recipe
+# Quote-fix recipe (legacy repair)
 
-A reliable issue: when you write a JS generation script via the file tools, full-width Chinese quotes "" sometimes get collapsed to ASCII " — which breaks the JS string literal and the script won't compile.
+> **You shouldn't need this for new documents.** Step 7 of the compile workflow keeps content in JSON data files, where full-width quotes need no escaping at all. This recipe exists for repairing *legacy* scripts that embed Chinese content in JS string literals.
+
+The issue it repairs: when a JS generation script with embedded content is written via file tools, full-width Chinese quotes "" sometimes get collapsed to ASCII " — which breaks the JS string literal and the script won't compile.
 
 This recipe restores the full-width quotes around CJK content while preserving ASCII quotes around JS strings.
 

@@ -1,72 +1,68 @@
 # Adapter — Claude Code (CLI)
 
-Claude Code uses the same plugin format as Cowork. You have two install routes.
+This repo **is** a Claude Code plugin (root-level `.claude-plugin/plugin.json` + `skills/` + `commands/`) and also ships a marketplace manifest, so the repo itself is the install source.
 
-## Path A — install via `claude` CLI
+> Note: `claude plugin install` only accepts plugins from a registered marketplace. It does **not** accept a `.plugin` file path — that's a Cowork / plugin-only-client mechanism.
 
-If a prebuilt `.plugin` file is available:
-
-```bash
-claude plugin install <bundle-root>/dist/formal-doc-compiler-skill-0.2.0.plugin
-```
-
-The Claude Code CLI handles unpacking and registration. Confirm with:
+## Path A — install straight from GitHub (recommended)
 
 ```bash
-claude plugin list
+claude plugin marketplace add sunfeihu007/formal-doc-compiler-skill
+claude plugin install formal-doc-compiler-skill@formal-doc-compiler
 ```
 
-`formal-doc-compiler-skill` should appear with version `0.2.0`.
-
-## Path B — symlink for live development
-
-If the user wants to edit the bundle and have changes take effect immediately:
+## Path B — install from a local clone
 
 ```bash
-# Make sure the plugin layout exists (build it from the bundle if not)
-# Then symlink it into Claude Code's plugin directory
-BUNDLE_ROOT=<bundle-root>
-mkdir -p ~/.claude/plugins
-ln -s "$BUNDLE_ROOT" ~/.claude/plugins/formal-doc-compiler-skill
+git clone https://github.com/sunfeihu007/formal-doc-compiler-skill
+claude plugin marketplace add ./formal-doc-compiler-skill
+claude plugin install formal-doc-compiler-skill@formal-doc-compiler
 ```
 
-Note: this assumes the bundle root itself follows Claude Code's plugin layout. The bundle has both — a top-level `instructions/` for client-neutral use, AND it can be built into the Cowork plugin layout via `adapters/claude-cowork.md` Path C. For Claude Code, the simplest is to use Path A's installer; symlinking the raw bundle won't register skills unless you also build a `.claude-plugin/plugin.json` and `skills/*/SKILL.md` layout.
+Or run the script, which does the same and installs Python deps:
 
-## Path C — start from raw bundle (advanced)
+```bash
+bash install/install-claude-code.sh
+```
 
-If only the raw bundle is available, build the plugin layout first using the steps in `adapters/claude-cowork.md` Path C, then install via Path A above.
+## Path C — skills-directory fallback (no plugin system needed)
+
+If the plugin routes fail (old CLI version, restricted environment), copy the pieces in directly:
+
+```bash
+TARGET=~/agent-skills/formal-doc-compiler-skill
+cp -R <bundle-root> "$TARGET"
+mkdir -p ~/.claude/skills ~/.claude/commands
+cp -R "$TARGET"/skills/* ~/.claude/skills/
+cp "$TARGET"/commands/*.md ~/.claude/commands/
+```
+
+`install/install-claude-code.sh` falls back to this automatically when the `claude` CLI is unavailable. In this mode, `${BUNDLE_ROOT}` inside the skill files means `~/agent-skills/formal-doc-compiler-skill`.
+
+## Python dependencies
+
+The compliance scanner needs `pyyaml` (+ `python-docx` / `python-pptx` / `openpyxl` per format). The install script handles this (pip `--user`, falling back to a venv at `~/.formal-doc-compiler-skill/venv`). Manual: see `skills/compliance-check/SKILL.md` § Python dependencies.
 
 ## Verification
 
 ```bash
 claude plugin list
-# Expected: formal-doc-compiler-skill@0.2.0
+# Expected: formal-doc-compiler-skill (from marketplace formal-doc-compiler)
 ```
 
-In an interactive session:
-```
-> /compile --help
-```
-
-Should show the command's argument hints.
+In an interactive session, `/compile` should be recognized, and asking "基于这个文件夹写一份方案" should trigger the `formal-doc-compiler-skill` skill.
 
 ## Uninstall
 
 ```bash
 claude plugin uninstall formal-doc-compiler-skill
+claude plugin marketplace remove formal-doc-compiler
 ```
 
-or remove the symlink:
-
-```bash
-rm ~/.claude/plugins/formal-doc-compiler-skill
-```
+or for the skills-directory fallback: `bash install/uninstall.sh`.
 
 ## Troubleshooting
 
-- **`claude plugin install` errors with "invalid manifest"** — the `.plugin` file isn't a valid zip with the expected layout. Use Path C to rebuild.
+- **`claude plugin marketplace add` errors** — your CLI may predate marketplaces; use Path C.
 - **`/compile` recognized but workflow doesn't trigger** — make sure the working directory has source files. The skill checks file count before activating its main workflow.
-- **`python3` errors during compliance scan** — install dependencies:
-  ```bash
-  pip install pyyaml python-docx python-pptx openpyxl --break-system-packages
-  ```
+- **`python3` errors during compliance scan** — see `skills/compliance-check/SKILL.md` § Python dependencies.

@@ -5,15 +5,19 @@ Antigravity is an IDE-style agent. Its primary extension points are:
 1. **Rules / system prompt files** (project-level or workspace-level)
 2. **Workspace-level scripts and configs**
 
-The bundle mostly works through (1).
+The bundle works through (1). The install script does all of it:
 
-## Install
+```bash
+bash install/install-antigravity.sh
+```
+
+## Install (manual)
 
 ### Step 1 — Place the bundle
 
 ```bash
 mkdir -p ~/agent-skills
-mv <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
+cp -R <current-bundle-location> ~/agent-skills/formal-doc-compiler-skill
 ```
 
 ### Step 2 — Add to Antigravity rules
@@ -24,38 +28,11 @@ Antigravity reads rules from one of these locations (depending on version):
 - `~/Library/Application Support/Antigravity/rules.md` (macOS, global)
 - `.antigravity/rules.md` (project-level)
 
-Pick the global location for cross-project use. Append:
-
-```markdown
-
-# === formal-doc-compiler-skill skill bundle ===
-
-When the user asks to compile a formal document from source materials
-(tender / RFP / 招标要求 / 方案 / 报告 / 白皮书 / proposal / white paper
-/ research brief / project summary), follow the 9-step workflow in
-~/agent-skills/formal-doc-compiler-skill/instructions/compile.md.
-
-Sub-procedures (read on demand):
-- File triage:           ~/agent-skills/formal-doc-compiler-skill/instructions/file-triage.md
-- Compliance scan:       ~/agent-skills/formal-doc-compiler-skill/instructions/compliance-check.md
-- Chinese typography:    ~/agent-skills/formal-doc-compiler-skill/instructions/cn-formal-style.md
-- Archive deliverable:   ~/agent-skills/formal-doc-compiler-skill/instructions/archive.md
-
-Scanner: ~/agent-skills/formal-doc-compiler-skill/scripts/scan.py
-Wordlist template: ~/agent-skills/formal-doc-compiler-skill/templates/wordlist-starter.yaml
-
-Resolve ${BUNDLE_ROOT} to ~/agent-skills/formal-doc-compiler-skill/
-
-# === end formal-doc-compiler-skill ===
-```
+Pick the global location for cross-project use. Append the block produced by `install/common.sh`'s `emit_rules_block` (same block the Codex adapter uses — it points the agent at `skills/formal-doc-compiler-skill/SKILL.md` and the sub-procedures).
 
 ### Step 3 — Install Python dependencies
 
-Same as Codex:
-
-```bash
-pip3 install pyyaml python-docx python-pptx openpyxl --break-system-packages
-```
+Same order of preference as the Codex adapter: `pip3 install --user …`, falling back to a venv at `~/.formal-doc-compiler-skill/venv`. Don't reach for `--break-system-packages` first.
 
 ### Step 4 — Project-level overrides (optional)
 
@@ -70,11 +47,7 @@ Per-project rules can override or extend the global. For projects with specific 
 ## Uninstall
 
 ```bash
-# Remove the rules block (edit out the section between === markers)
-$EDITOR ~/.config/antigravity/rules.md  # or the path that matched
-
-# Remove the bundle
-rm -rf ~/agent-skills/formal-doc-compiler-skill
+bash install/uninstall.sh
 ```
 
 ## Troubleshooting

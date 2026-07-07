@@ -1,0 +1,20 @@
+{
+  "name": "formal-doc-compiler-skill",
+  "version": "0.4.0",
+  "description": "Turn a folder of mixed source materials (.docx, .pdf, .pptx, .xlsx, .md) into a polished formal document — tender requirements, proposals, white papers, research briefs, project summaries. Nine-step workflow with file triage, parsing, synthesis, drafting, compliance scanning, and visual sampling.",
+  "author": {
+    "name": "superone"
+  },
+  "keywords": [
+    "document",
+    "tender",
+    "rfp",
+    "proposal",
+    "white-paper",
+    "research-brief",
+    "compliance",
+    "docx",
+    "chinese-formal-document"
+  ],
+  "license": "MIT"
+}

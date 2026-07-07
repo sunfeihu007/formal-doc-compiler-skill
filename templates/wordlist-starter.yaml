@@ -4,7 +4,15 @@
 #
 # Category structure is just for grouping in the report. Add or rename freely.
 # `suggested_replacement` is shown to the writer when a hit is reported.
-# `terms` accepts both literal strings and regex patterns (escape with \).
+#
+# Terms are LITERAL by default — matched case-insensitively and
+# width-insensitively (full-width ＧＬＭ matches GLM). Regex metacharacters
+# in literals are safe: "C++" matches the literal string C++.
+#
+# For a regex pattern, prefix the term with "regex:", e.g.
+#   - "regex:\\d+\\s*并发"
+# Avoid \b next to CJK characters — Python counts CJK as word characters,
+# so "\\d+秒\\b" silently fails on "3秒内". Write "\\d+\\s*秒" instead.
 
 categories:
 

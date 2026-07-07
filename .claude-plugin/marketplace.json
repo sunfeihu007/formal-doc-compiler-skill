@@ -1,0 +1,17 @@
+{
+  "name": "formal-doc-compiler",
+  "owner": {
+    "name": "sunfeihu007"
+  },
+  "metadata": {
+    "description": "Marketplace for the formal-doc-compiler-skill bundle. Add this repo as a marketplace, then install the plugin from it.",
+    "version": "0.4.0"
+  },
+  "plugins": [
+    {
+      "name": "formal-doc-compiler-skill",
+      "source": "./",
+      "description": "Turn a folder of mixed source materials into a polished formal document — tender requirements, proposals, white papers, research briefs, project summaries."
+    }
+  ]
+}
