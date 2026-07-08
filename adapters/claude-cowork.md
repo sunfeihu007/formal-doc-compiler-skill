@@ -11,7 +11,7 @@ The repo ships a prebuilt plugin at `dist/formal-doc-compiler-skill-<version>.pl
 3. Ask the user to click the **Save plugin** button in the resulting card. Cowork handles the rest.
 
 After install, Cowork registers:
-- Skills: `formal-doc-compiler-skill`, `file-triage`, `compliance-check`, `cn-formal-style`
+- Skills: `formal-doc-compiler-skill`, `file-triage`, `compliance-check`, `requirement-traceability`, `cn-formal-style`
 - Commands: `/compile`, `/archive`
 
 ## Path B — build from source
@@ -27,7 +27,7 @@ bash <bundle-root>/build.sh
 
 ## Verification
 
-1. In a new Cowork conversation, ask: "what skills are installed?" — the four skills above should appear.
+1. In a new Cowork conversation, ask: "what skills are installed?" — the five skills above should appear.
 2. Type `/compile` — Cowork should recognize the command.
 
 ## Uninstall

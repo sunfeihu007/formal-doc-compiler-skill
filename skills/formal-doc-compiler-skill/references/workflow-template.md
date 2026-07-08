@@ -21,6 +21,7 @@ Copy-pasteable task list for clients that have a task-list / progress mechanism 
 
 - **>15 source files** — split 解析 into "L1 解析", "L2 解析", "L3 扫读"
 - **Multiple output formats** — split 撰写 per format
+- **Response-class document (应标/投标响应)** — 三层校验 becomes 四层校验; add "抽取条款清单" after 解析源材料 and "需求追溯（覆盖 + 超承诺 + 响应表引用）" inside the verification task. Re-add the traceability task on every revision round.
 - **High-stakes deliverable (legal, regulatory)** — add an "外部专家送审" task between 校验 and 交付
 - **Recurring deliverable** — add a final task to archive the deliverable for few-shot reuse
 

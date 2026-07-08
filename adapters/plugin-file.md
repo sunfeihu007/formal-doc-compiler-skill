@@ -14,7 +14,7 @@ Use this for any third-party client whose only extension mechanism is importing 
 2. Import `dist/formal-doc-compiler-skill-<version>.plugin` with the client's plugin mechanism (import / open / drag-drop — whatever the client offers).
 
 3. The client should register:
-   - Skills: `formal-doc-compiler-skill`, `file-triage`, `compliance-check`, `cn-formal-style`
+   - Skills: `formal-doc-compiler-skill`, `file-triage`, `compliance-check`, `requirement-traceability`, `cn-formal-style`
    - Commands: `/compile`, `/archive` (if the client supports commands)
 
 ## What's inside the zip
@@ -40,7 +40,7 @@ The skills are written client-neutrally — they refer to capabilities ("your cl
 
 ## Verification
 
-Ask the client: "what skills do you have installed?" — the four skills should appear. Then run a small compile task with 2–3 sample files.
+Ask the client: "what skills do you have installed?" — the five skills should appear. Then run a small compile task with 2–3 sample files.
 
 ## Uninstall
 

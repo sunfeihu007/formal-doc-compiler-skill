@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.0 — 2026-07-08
+
+Bid-response (应标) support, distilled from a real tender-response run.
+
+### Added
+
+- **`skills/requirement-traceability/`** — bidirectional traceability for response-class documents. The blacklist scan answers "did we say something forbidden"; this answers the two opposite questions: **coverage** (every tender clause has a response — uncovered-clauses table; an uncovered mandatory clause blocks delivery) and **over-promise** (every commitment traces back to a clause — unbacked-promises table; 7×24 hotlines, periodic inspection reports, free migrations and other self-added liabilities get caught, and deleted protective/scope-exclusion clauses are flagged). Includes the response-table cross-reference rule: documents containing a 逐条响应表 re-verify referenced sections after *every* revision round.
+- **Length-target support** — Step 2 optionally records a pages/words target; Step 5 distributes it across chapters; Step 8's visual layer verifies with `soffice → pdfinfo`, adjusting spacing/trimming and re-rendering when over budget. Documents the docx-js `TableOfContents` gotcha (renders empty under LibreOffice — reserve its real pages; remind the user to update fields in Word at delivery).
+
+### Changed
+
+- Step 1 now classifies the document (response-class vs ordinary); Step 2 designates the authoritative requirements file for response docs and requires explicit user arbitration when source files conflict (e.g. 需求书 vs 报价函 disagreeing on who provides the database).
+- Step 8 is "layered verification": three layers for ordinary documents, four for response-class (compliance → traceability → format → visual).
+- `red-flags.md` gains response-class drift signals (unbacked promise, deleted protective clause, stale response-table reference, undelivered page-count check); `workflow-template.md` gains the response-class task variant; `compliance-check` documents its blacklist scope and points to the traceability skill.
+
 ## 0.4.0 — 2026-07-07
 
 Single source of truth, working installs on every client, and scanner fixes.

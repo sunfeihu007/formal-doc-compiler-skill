@@ -43,7 +43,7 @@ if command -v claude >/dev/null 2>&1; then
 fi
 
 # Claude Code — skills-directory route
-for name in formal-doc-compiler-skill file-triage compliance-check cn-formal-style; do
+for name in formal-doc-compiler-skill file-triage compliance-check requirement-traceability cn-formal-style; do
     rm -rf "$HOME/.claude/skills/$name"
 done
 rm -f "$HOME/.claude/commands/compile.md" "$HOME/.claude/commands/archive.md"

@@ -16,6 +16,8 @@ After drafting any document that goes outside your organization (or has complian
 
 Internal-only memos and quick chat replies do not need this.
 
+**Scope note:** this skill is a *blacklist* — it answers "did we say something we must not say." For bid-response documents (应标/投标响应) it is necessary but not sufficient: the opposite failure directions (漏应答 — a tender clause nobody responded to; 超承诺 — a commitment no clause asked for) are covered by the `requirement-traceability` skill. Run both for response documents.
+
 ## What it does
 
 1. Resolves the project's compliance wordlist (default location: `.compliance/wordlist.yaml` in the working folder; alternate locations explained below).

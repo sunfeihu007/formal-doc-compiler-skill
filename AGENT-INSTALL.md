@@ -91,6 +91,7 @@ The repo root is a Claude-format plugin, and `skills/` + `commands/` are the sin
 | **compile** | `skills/formal-doc-compiler-skill/SKILL.md` | The 9-step main workflow |
 | **file-triage** | `skills/file-triage/SKILL.md` | L1 / L2 / L3 / L4 reading-tier rules |
 | **compliance-check** | `skills/compliance-check/SKILL.md` | Wordlist scanner, calls `scripts/scan.py` |
+| **requirement-traceability** | `skills/requirement-traceability/SKILL.md` | Bidirectional traceability for bid-response docs (coverage + over-promise) |
 | **cn-formal-style** | `skills/cn-formal-style/SKILL.md` | Chinese formal-document typography for .docx |
 | **archive** | `commands/archive.md` | Save a deliverable as a few-shot example |
 

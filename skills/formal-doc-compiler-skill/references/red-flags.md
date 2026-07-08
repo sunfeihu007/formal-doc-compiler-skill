@@ -32,8 +32,13 @@ Catch these early. Each is a moment where the next agent step is likely to be wr
 
 ## Drift signals during verification (Step 8)
 
-- **Skipping any of the three layers.** All three or the workflow fails. Be especially careful not to skip the visual layer.
+- **Skipping any layer.** Three layers for ordinary docs, four for response-class. Be especially careful not to skip the visual layer.
 - **Compliance scan hits, you decide they're "fine".** They are never fine. Either fix the document or update the wordlist with the user's explicit approval. Never silently accept.
+- **Response-class doc verified only against the blacklist.** The blacklist can't see 漏应答 or 超承诺 — run `requirement-traceability` too.
+- **A commitment appears that no tender clause asked for** (7×24, 定期巡检, 免费迁移…). Free contractual liability. Trace every promise back to a clause or get explicit user approval.
+- **A protective clause (范围排除 / 边界声明) disappeared during revision.** A deleted exclusion is an implicit new promise. Diff against the previous round.
+- **The 逐条响应表 references a section that a later edit deleted.** Re-run the cross-reference check after *every* revision round, not just the first draft.
+- **User gave a page target but nobody counted pages before delivery.** `soffice → pdfinfo` takes seconds; remember the docx-js TOC renders empty in LibreOffice, so budget its real pages.
 
 ## Drift signals during delivery (Step 9)
 
